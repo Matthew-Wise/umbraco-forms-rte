@@ -25,3 +25,4 @@
 **/bin/
 **/obj/
 *.suo
+/src/Mw.UmbForms.Rte.Web/Media/created-packages
