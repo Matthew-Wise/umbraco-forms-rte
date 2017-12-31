@@ -6,9 +6,13 @@
 **/App_Data/[Pp]review/
 **/App_Data/TEMP/
 **/App_Data/NuGetBackup/
-
+**/[Uu]mbraco_Client/
+**/[Uu]mbraco/
 # Ignore Umbraco content cache file
 **/App_Data/umbraco.config
+
+# Nuget packages folder
+**/[Pp]ackages/
 
 # Don't ignore Umbraco packages (VisualStudio.gitignore mistakes this for a NuGet packages folder)
 # Make sure to include details from VisualStudio.gitignore BEFORE this
@@ -17,3 +21,7 @@
 
 # ImageProcessor DiskCache 
 **/App_Data/cache/
+
+**/bin/
+**/obj/
+*.suo
