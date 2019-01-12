@@ -288,6 +288,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\FormsRteApiController.cs" />
     <Compile Include="FieldTypes\RichText.cs" />
     <Compile Include="FormsRteCreator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

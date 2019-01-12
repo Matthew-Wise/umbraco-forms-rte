@@ -1,4 +1,5 @@
-﻿using Umbraco.Core;
+﻿using System.Collections.Generic;
+using Umbraco.Core;
 using Umbraco.Core.Events;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
@@ -18,21 +19,32 @@ namespace Mw.UmbForms.Rte
             if (!applicationContext.IsConfigured) return;
             DataTypeService.Deleting += StopFormRteDelete;
             var dataTypeService = applicationContext.Services.DataTypeService;
-                        
-            if (dataTypeService.GetDataTypeDefinitionByName(FormRteName) != null) return;            
 
-            dataTypeService.Save(new DataTypeDefinition(Constants.PropertyEditors.TinyMCEAlias)
+            if (dataTypeService.GetDataTypeDefinitionByName(FormRteName) != null) return;
+
+            var formsRTE = new DataTypeDefinition(Constants.PropertyEditors.TinyMCEAlias)
             {
-                Name = FormRteName,
-            });            
+                Name = FormRteName
+            };
+            var prevalues = new Dictionary<string, PreValue>
+            {
+                { "editor", new PreValue(
+                @"{
+                    toolbar: [""code"", ""bold"", ""italic"", ""bullist"", ""numlist"", ""link"", ""umbmediapicker""],
+                    stylesheets: [],
+                    dimensions: { height: 500 },
+                    maxImageSize: 500
+                }") }
+            };
+            dataTypeService.SaveDataTypeAndPreValues(formsRTE, prevalues);
         }
-               
+
 
         private void StopFormRteDelete(IDataTypeService sender, DeleteEventArgs<IDataTypeDefinition> e)
         {
-            foreach(var dt in e.DeletedEntities)
+            foreach (var dt in e.DeletedEntities)
             {
-                if(dt.Name == FormRteName && e.CanCancel)
+                if (dt.Name == FormRteName && e.CanCancel)
                 {
                     e.CancelOperation(new EventMessage("Error", "This data type is used by Umbraco Forms Rich Text field", EventMessageType.Error));
                 }

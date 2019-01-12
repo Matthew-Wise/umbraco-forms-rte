@@ -25,4 +25,8 @@
 **/bin/
 **/obj/
 *.suo
+**/.vs/
+**/*.user
 /src/Mw.UmbForms.Rte.Web/Media/created-packages
+/src/Mw.UmbForms.Rte.Web/App_Data/umbraco.licensing.log.txt
+/src/Mw.UmbForms.Rte.Web/*.user

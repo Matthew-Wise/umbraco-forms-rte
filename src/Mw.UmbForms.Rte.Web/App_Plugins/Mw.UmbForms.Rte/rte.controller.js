@@ -1,8 +1,9 @@
 ﻿(function () {
-	function mwRteController($scope, dataTypeResource) {
+	function mwRteController($scope, $http) {
 		"use strict";
 		$scope.htmfield = [];
-		dataTypeResource.getByName("Form RTE").then(function (d) {
+		$http.get("/umbraco/backoffice/FormsRte/FormsRteApi/GetByName/?name=Form RTE").then(function (res) {
+		    var d = res.data;
 			$scope.htmfield = [{
 				alias: "htmfield",
 				label: "Html",
