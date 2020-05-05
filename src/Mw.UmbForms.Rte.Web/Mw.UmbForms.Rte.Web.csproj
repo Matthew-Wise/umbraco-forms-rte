@@ -1,8 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\Mw.UmbForms.Rte\packages\UmbracoCms.7.6.0\build\UmbracoCms.props" Condition="Exists('..\Mw.UmbForms.Rte\packages\UmbracoCms.7.6.0\build\UmbracoCms.props')" />
-  <Import Project="..\Mw.UmbForms.Rte\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\Mw.UmbForms.Rte\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
-  <Import Project="..\Mw.UmbForms.Rte\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\Mw.UmbForms.Rte\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -25,6 +22,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -72,12 +70,8 @@
       <HintPath>..\Mw.UmbForms.Rte\packages\UmbracoCms.Core.7.6.0\lib\net45\controls.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CookComputing.XmlRpcV2, Version=2.5.0.0, Culture=neutral, PublicKeyToken=a7d6e17aa302004d, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\xmlrpcnet.2.5.0\lib\net20\CookComputing.XmlRpcV2.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="EPPlus, Version=4.0.5.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\UmbracoForms.Core.6.0.5\lib\EPPlus.dll</HintPath>
+      <HintPath>..\Mw.UmbForms.Rte\packages\EPPlus.4.5.3.1\lib\net40\EPPlus.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Examine, Version=0.1.82.0, Culture=neutral, processorArchitecture=MSIL">
@@ -86,10 +80,6 @@
     </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\Mw.UmbForms.Rte\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ImageProcessor, Version=2.5.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -181,56 +171,9 @@
       <HintPath>..\Mw.UmbForms.Rte\packages\Microsoft.IO.RecyclableMemoryStream.1.2.1\lib\net45\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MiniProfiler, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b44f9351044011a3, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\MiniProfiler.2.1.0\lib\net40\MiniProfiler.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MySql.Data, Version=6.9.10.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\MySql.Data.6.9.10\lib\net45\MySql.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Semver, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\semver.1.1.2\lib\net451\Semver.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="SQLCE4Umbraco, Version=1.0.6331.7971, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\Mw.UmbForms.Rte\packages\UmbracoCms.Core.7.6.0\lib\net45\SQLCE4Umbraco.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Data.SqlServerCe, Version=4.0.0.1, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
@@ -246,14 +189,7 @@
       <HintPath>..\Mw.UmbForms.Rte\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Reflection.Metadata, Version=1.0.21.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\Mw.UmbForms.Rte\packages\System.Threading.Tasks.Dataflow.4.7.0\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -364,105 +300,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="config\imageprocessor\security.config" />
-    <Content Include="config\imageprocessor\processing.config" />
-    <Content Include="config\imageprocessor\cache.config" />
-    <Content Include="Views\Web.config" />
-    <Content Include="Views\Partials\Grid\Editors\Textstring.cshtml" />
-    <Content Include="Views\Partials\Grid\Editors\Rte.cshtml" />
-    <Content Include="Views\Partials\Grid\Editors\Media.cshtml" />
-    <Content Include="Views\Partials\Grid\Editors\Macro.cshtml" />
-    <Content Include="Views\Partials\Grid\Editors\Embed.cshtml" />
-    <Content Include="Views\Partials\Grid\Editors\Base.cshtml" />
-    <Content Include="Views\Partials\Grid\Bootstrap3.cshtml" />
-    <Content Include="Views\Partials\Grid\Bootstrap3-Fluid.cshtml" />
-    <Content Include="Views\Partials\Grid\Bootstrap2.cshtml" />
-    <Content Include="Views\Partials\Grid\Bootstrap2-Fluid.cshtml" />
-    <Content Include="Media\Web.config" />
-    <Content Include="config\umbracoSettings.config" />
-    <Content Include="config\trees.config" />
-    <Content Include="config\tinyMceConfig.config" />
-    <Content Include="config\scripting.config" />
-    <Content Include="config\metablogConfig.config" />
-    <Content Include="config\log4net.config" />
-    <Content Include="config\FileSystemProviders.config" />
-    <Content Include="config\feedProxy.config" />
-    <Content Include="config\ExamineSettings.config" />
-    <Content Include="config\ExamineIndex.config" />
-    <Content Include="config\EmbeddedMedia.config" />
-    <Content Include="config\Dashboard.config" />
-    <Content Include="config\ClientDependency.config" />
-    <Content Include="config\BaseRestExtensions.config" />
-    <Content Include="config\applications.config" />
-    <Content Include="config\404handlers.config" />
-    <Content Include="Views\Partials\Forms\Themes\default\Submitted.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Script.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Render.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\default\Form.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\bootstrap3-horizontal\Form.cshtml" />
-    <Content Include="Views\Partials\Forms\Themes\bootstrap3-horizontal\Fieldtypes\FieldType.RadioButtonList.cshtml" />
-    <Content Include="Views\Partials\Forms\Script.cshtml" />
-    <Content Include="Views\Partials\Forms\Form.cshtml" />
-    <Content Include="Views\Partials\Forms\Export\csv.cshtml" />
-    <Content Include="Views\Partials\Forms\Emails\Example-Template.cshtml" />
-    <Content Include="Views\Partials\Forms\DatePicker.cshtml" />
-    <Content Include="Views\MacroPartials\RenderUmbracoFormScripts.cshtml" />
-    <Content Include="Views\MacroPartials\InsertUmbracoFormWithTheme.cshtml" />
     <Content Include="App_Plugins\Mw.UmbForms.Rte\rte.controller.js" />
     <Content Include="App_Plugins\Mw.UmbForms.Rte\package.manifest" />
-    <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Partials\Forms\Fieldtypes\FieldType.RichText.cshtml" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Scripts\jquery-1.10.2.min.map" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Plugins\Mw.UmbForms.Rte\design.html" />
     <Content Include="App_Plugins\Mw.UmbForms.Rte\editor.html" />
-    <Content Include="config\grid.editors.config.js" />
-    <Content Include="config\Lang\cs-CZ.user.xml" />
-    <Content Include="config\Lang\da-DK.user.xml" />
-    <Content Include="config\Lang\de-DE.user.xml" />
-    <Content Include="config\Lang\en-GB.user.xml" />
-    <Content Include="config\Lang\en-US.user.xml" />
-    <Content Include="config\Lang\es-ES.user.xml" />
-    <Content Include="config\Lang\fr-FR.user.xml" />
-    <Content Include="config\Lang\he-IL.user.xml" />
-    <Content Include="config\Lang\it-IT.user.xml" />
-    <Content Include="config\Lang\ja-JP.user.xml" />
-    <Content Include="config\Lang\ko-KR.user.xml" />
-    <Content Include="config\Lang\nb-NO.user.xml" />
-    <Content Include="config\Lang\nl-NL.user.xml" />
-    <Content Include="config\Lang\pl-PL.user.xml" />
-    <Content Include="config\Lang\pt-BR.user.xml" />
-    <Content Include="config\Lang\ru-RU.user.xml" />
-    <Content Include="config\Lang\sv-SE.user.xml" />
-    <Content Include="config\Lang\zh-CN.user.xml" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Site.css" />
-    <Content Include="default.aspx" />
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Global.asax" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="Scripts\jquery-1.10.2.js" />
-    <Content Include="Scripts\jquery-1.10.2.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
-    <Content Include="Web.config" />
     <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.RichText.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -477,6 +329,10 @@
       <Project>{11f72a6a-35bd-48f2-a9dc-1317798d4fea}</Project>
       <Name>Mw.UmbForms.Rte</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="config\" />
+    <Folder Include="Media\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -503,17 +359,6 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\Mw.UmbForms.Rte\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\Mw.UmbForms.Rte\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
-    <Error Condition="!Exists('..\Mw.UmbForms.Rte\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\Mw.UmbForms.Rte\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-    <Error Condition="!Exists('..\Mw.UmbForms.Rte\packages\UmbracoCms.7.6.0\build\UmbracoCms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\Mw.UmbForms.Rte\packages\UmbracoCms.7.6.0\build\UmbracoCms.props'))" />
-    <Error Condition="!Exists('..\Mw.UmbForms.Rte\packages\UmbracoCms.7.6.0\build\UmbracoCms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\Mw.UmbForms.Rte\packages\UmbracoCms.7.6.0\build\UmbracoCms.targets'))" />
-  </Target>
-  <Import Project="..\Mw.UmbForms.Rte\packages\AutoMapper.3.3.1\tools\AutoMapper.targets" Condition="Exists('..\Mw.UmbForms.Rte\packages\AutoMapper.3.3.1\tools\AutoMapper.targets')" />
-  <Import Project="..\Mw.UmbForms.Rte\packages\UmbracoCms.7.6.0\build\UmbracoCms.targets" Condition="Exists('..\Mw.UmbForms.Rte\packages\UmbracoCms.7.6.0\build\UmbracoCms.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
