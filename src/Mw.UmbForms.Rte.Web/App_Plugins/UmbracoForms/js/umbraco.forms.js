@@ -70,17 +70,15 @@ angular.module("umbraco").controller("UmbracoForms.SettingTypes.DocumentMapperCo
 	});
 
 angular.module("umbraco").controller("UmbracoForms.SettingTypes.EmailTemplatePicker",
-	function ($scope, pickerResource) {
+	function ($scope, pickerResource, editorService) {
 
 	    $scope.openTreePicker = function() {
 
-			$scope.treePickerOverlay = {
-				view: "treepicker",
+			var treePickerOverlay = {
 				treeAlias: "emailTemplates",
 				section:"forms",
 				entityType: "email-template",
 				multiPicker: false,
-				show: true,
 				onlyInitialized: false,
 				select: function(node){
 					 pickerResource.getVirtualPathForEmailTemplate(node.id).then(function (response) {
@@ -88,15 +86,14 @@ angular.module("umbraco").controller("UmbracoForms.SettingTypes.EmailTemplatePic
 						$scope.setting.value = response.data.path;
 					 });
 
-                	$scope.treePickerOverlay.show = false;
-                    $scope.treePickerOverlay = null;
+                    editorService.close();
                 },
                 close: function (model) {
-                    // close dialog
-                    $scope.treePickerOverlay.show = false;
-                    $scope.treePickerOverlay = null;
+                    editorService.close();
                 }
 			};
+
+            editorService.treePicker(treePickerOverlay);
 
 	    };
 
@@ -212,52 +209,52 @@ angular.module("umbraco").controller("UmbracoForms.SettingTypes.FieldMapperContr
 
     angular.module("umbraco").controller("UmbracoForms.SettingTypes.FileUpload", FileUploadSettingsController);
 })();
-angular.module("umbraco").controller("UmbracoForms.SettingTypes.File",
-	function ($scope, dialogService, utilityService) {
-
-		var umbracoVersion = Umbraco.Sys.ServerVariables.application.version;
-
-	    $scope.openMediaPicker = function() {
-
-			var compareOptions = {
-				zeroExtend: true
-			};
-
-			var versionCompare = utilityService.compareVersions(umbracoVersion, "7.4", compareOptions);
-
-			if(versionCompare === 0 || versionCompare === 1) {
-
-				$scope.mediaPickerOverlay = {
-					view: "mediapicker",
-					show: true,
-					submit: function(model) {
-
-						var selectedImage = model.selectedImages[0];
-						populateFile(selectedImage);
-
-						$scope.mediaPickerOverlay.show = false;
-						$scope.mediaPickerOverlay = null;
-					}
-				};
-
-			} else {
-
-				dialogService.mediaPicker({ callback: populateFile });
-
-			}
-
-	    };
-
-	    function populateFile(item) {
-
-	        //From the picked media item - get the 'umbracoFile' property
-	        //Previously we was assuming the first property was umbracoFile but if user adds custom propeties then it may not be the first
-            //Rather than a for loop, use underscore.js
-	        var umbracoFileProp = _.findWhere(item.properties, {alias: "umbracoFile"});
-
-            $scope.setting.value = umbracoFileProp.value;
-        }
-	});
+// angular.module("umbraco").controller("UmbracoForms.SettingTypes.File",
+// 	function ($scope, dialogService, utilityService) {
+//
+// 		var umbracoVersion = Umbraco.Sys.ServerVariables.application.version;
+//
+// 	    $scope.openMediaPicker = function() {
+//
+// 			var compareOptions = {
+// 				zeroExtend: true
+// 			};
+//
+// 			var versionCompare = utilityService.compareVersions(umbracoVersion, "7.4", compareOptions);
+//
+// 			if(versionCompare === 0 || versionCompare === 1) {
+//
+// 				$scope.mediaPickerOverlay = {
+// 					view: "mediapicker",
+// 					show: true,
+// 					submit: function(model) {
+//
+// 						var selectedImage = model.selectedImages[0];
+// 						populateFile(selectedImage);
+//
+// 						$scope.mediaPickerOverlay.show = false;
+// 						$scope.mediaPickerOverlay = null;
+// 					}
+// 				};
+//
+// 			} else {
+//
+// 				dialogService.mediaPicker({ callback: populateFile });
+//
+// 			}
+//
+// 	    };
+//
+// 	    function populateFile(item) {
+//
+// 	        //From the picked media item - get the 'umbracoFile' property
+// 	        //Previously we was assuming the first property was umbracoFile but if user adds custom propeties then it may not be the first
+//             //Rather than a for loop, use underscore.js
+// 	        var umbracoFileProp = _.findWhere(item.properties, {alias: "umbracoFile"});
+//
+//             $scope.setting.value = umbracoFileProp.value;
+//         }
+// 	});
 
 angular.module("umbraco").controller("UmbracoForms.SettingTypes.Pickers.ConnectionStringController",
 	function ($scope, $routeParams, pickerResource) {
@@ -265,54 +262,54 @@ angular.module("umbraco").controller("UmbracoForms.SettingTypes.Pickers.Connecti
 	        $scope.strings = response.data;
 	    });
 	});
-angular.module("umbraco").controller("UmbracoForms.SettingTypes.Pickers.ContentController",
-	function ($scope, $routeParams, dialogService, entityResource, iconHelper) {
-
-	if (!$scope.setting) {
-	    $scope.setting = {};
-	}
-
-
-	var val = parseInt($scope.setting.value);
-	
-
-	if (!isNaN(val) && angular.isNumber(val)) {
-	    //node
-	    $scope.showQuery = false;
-
-	    entityResource.getById($scope.setting.value, "Document").then(function (item) {
-	        item.icon = iconHelper.convertFromLegacyIcon(item.icon);
-	        $scope.node = item;
-	    });
-	} 
-
-	$scope.openContentPicker = function () {
-	    var d = dialogService.treePicker({
-	        section: "content",
-	        treeAlias: "content",
-	        multiPicker: false,
-	        callback: populate
-	    });
-	};
-
-
-	$scope.clear = function () {
-	    $scope.id = undefined;
-	    $scope.node = undefined;
-	    $scope.setting.value = undefined;
-	};
-
-	function populate(item) {
-	    $scope.clear();
-	    item.icon = iconHelper.convertFromLegacyIcon(item.icon);
-	    $scope.node = item;
-	    $scope.id = item.id;
-	    $scope.setting.value = item.id;
-	}
-
-});
+// angular.module("umbraco").controller("UmbracoForms.SettingTypes.Pickers.ContentController",
+// 	function ($scope, $routeParams, dialogService, entityResource, iconHelper) {
+//
+// 	if (!$scope.setting) {
+// 	    $scope.setting = {};
+// 	}
+//
+//
+// 	var val = parseInt($scope.setting.value);
+//	
+//
+// 	if (!isNaN(val) && angular.isNumber(val)) {
+// 	    //node
+// 	    $scope.showQuery = false;
+//
+// 	    entityResource.getById($scope.setting.value, "Document").then(function (item) {
+// 	        item.icon = iconHelper.convertFromLegacyIcon(item.icon);
+// 	        $scope.node = item;
+// 	    });
+// 	} 
+//
+// 	$scope.openContentPicker = function () {
+// 	    var d = dialogService.treePicker({
+// 	        section: "content",
+// 	        treeAlias: "content",
+// 	        multiPicker: false,
+// 	        callback: populate
+// 	    });
+// 	};
+//
+//
+// 	$scope.clear = function () {
+// 	    $scope.id = undefined;
+// 	    $scope.node = undefined;
+// 	    $scope.setting.value = undefined;
+// 	};
+//
+// 	function populate(item) {
+// 	    $scope.clear();
+// 	    item.icon = iconHelper.convertFromLegacyIcon(item.icon);
+// 	    $scope.node = item;
+// 	    $scope.id = item.id;
+// 	    $scope.setting.value = item.id;
+// 	}
+//
+// });
 angular.module("umbraco").controller("UmbracoForms.SettingTypes.Pickers.ContentWithXpathController",
-	function ($scope, $routeParams, dialogService, entityResource, iconHelper, utilityService) {
+	function ($scope, $routeParams, editorService, entityResource, iconHelper, utilityService) {
 
 	var umbracoVersion = Umbraco.Sys.ServerVariables.application.version;
 
@@ -363,7 +360,6 @@ angular.module("umbraco").controller("UmbracoForms.SettingTypes.Pickers.ContentW
 				hideSubmitButton: true,
 				show: true,
 				submit: function(model) {
-
 					var selectedItem = model.selection[0];
 					populate(selectedItem);
 
@@ -374,13 +370,25 @@ angular.module("umbraco").controller("UmbracoForms.SettingTypes.Pickers.ContentW
 
 		} else {
 
-			var d = dialogService.treePicker({
-	        	section: "content",
-	        	treeAlias: "content",
-	        	multiPicker: false,
-	        	callback: populate
-	    	});
+            var treePicker = {
+                multiPicker: false,
+                entityType: "Media",
+                section: "content",
+                treeAlias: "content",
+                idType: "int"
+            };
+            
 
+            treePicker.submit = function (model) {
+                populate(model.selection[0]);
+                editorService.close();
+            };
+
+            treePicker.close = function () {
+                editorService.close();
+            };
+
+            editorService.treePicker(treePicker);
 		}
 
 	};
@@ -430,117 +438,115 @@ angular.module("umbraco").controller("UmbracoForms.SettingTypes.Pickers.Document
 	    });
 	});
 angular.module("umbraco")
-.controller("UmbracoForms.Dashboards.ActivityController",
-	function ($scope, recordResource) {
+.controller("UmbracoForms.Dashboards.FormsController",
+    function ($scope, $location, $cookies, formResource, licensingResource, updatesResource, notificationsService, userService, securityResource, recordResource) {
 
-		//var filter = {};
-		//recordResource.getRecords(filter).then(function(response){
-		//	$scope.records = response.data;
-		//});
+        var vm = this;
 
-	});
-
-angular.module("umbraco")
-.controller("UmbracoForms.Dashboards.LicensingController",
-    function ($scope, $location, $routeParams, $cookieStore, formResource, licensingResource, updatesResource, notificationsService, userService, utilityService, securityResource) {
-
-        $scope.overlay = {
+        vm.overlay = {
             show: false,
             title: "Congratulations",
             description: "You've just installed Umbraco Forms - Let's create your first form"
         };
 
-        var packageInstall = $cookieStore.get("umbPackageInstallId");
+        var packageInstall = $cookies.get("umbPackageInstallId");
+
         if (packageInstall) {
-            $scope.overlay.show = true;
-            $cookieStore.put("umbPackageInstallId", "");
+            vm.overlay.show = true;
+            $cookies.put("umbPackageInstallId", "");
         }
 
         //Default for canManageForms is false
         //Need a record in security to ensure user has access to edit/create forms
-        $scope.userCanManageForms = false;
+        vm.userCanManageForms = false;
 
         //Get Current User - To Check if the user Type is Admin
         userService.getCurrentUser().then(function (response) {
-            $scope.currentUser = response;
-            $scope.isAdminUser = response.userType.toLowerCase() === "admin";
+            vm.currentUser = response;
+            vm.isAdminUser = response.userGroups.includes("admin");
 
-            securityResource.getByUserId($scope.currentUser.id).then(function (response) {
-                $scope.userCanManageForms = response.data.userSecurity.manageForms;
+            securityResource.getByUserId(vm.currentUser.id).then(function (response) {
+                vm.userCanManageForms = response.data.userSecurity.manageForms;
             });
         });
 
         //if not initial install, but still do not have forms - display a message
-        if (!$scope.overlay.show) {
+        if (!vm.overlay.show) {
 
             //Check if we have any forms created yet - by chekcing number of items back from JSON response
             formResource.getOverView().then(function (response) {
                 if (response.data.length === 0) {
-                    $scope.overlay.show = true;
-                    $scope.overlay.title = "Create a form";
-                    $scope.overlay.description = "You do not have any forms setup yet, how about creating one now?";
+                    vm.overlay.show = true;
+                    vm.overlay.title = "Create a form";
+                    vm.overlay.description = "You do not have any forms setup yet, how about creating one now?";
                 }
             });
         }
 
-        $scope.getLicenses = function (config) {
+        vm.getLicenses = function (config) {
 
-            $scope.loginError = false;
-            $scope.hasLicenses = undefined;
+            vm.loginError = false;
+            vm.hasLicenses = undefined;
+            vm.isLoading = true;
 
             licensingResource.getAvailableLicenses(config).then(function (response) {
                 var licenses = response.data;
                 var currentDomain = window.location.hostname;
 
-                $scope.hasLicenses = licenses.length > 0;
+                vm.hasLicenses = licenses.length > 0;
                 _.each(licenses, function (lic) {
                     if (lic.bindings && lic.bindings.indexOf(currentDomain) >= 0) {
                         lic.currentDomainMatch = true;
                     }
                 });
 
-                $scope.configuredLicenses = _.filter(licenses, function (license) { return license.configured; });
-                $scope.openLicenses = _.filter(licenses, function (license) { return license.configured === false; });
+                vm.configuredLicenses = _.sortBy(_.filter(licenses, function (license) { return license.configured; }), 'currentDomainMatch');
+                vm.openLicenses = _.filter(licenses, function(license) { return license.configured === false; });
+                vm.isLoading = false;
 
             }, function (err) {
-                $scope.loginError = true;
-                $scope.hasLicenses = undefined;
+                vm.loginError = true;
+                vm.hasLicenses = undefined;
+                vm.isLoading = false;
             });
+
         };
 
 
-        $scope.configure = function (config) {
+        vm.configure = function (config) {
+            vm.isLoading = true;
             licensingResource.configureLicense(config).then(function (response) {
-                $scope.configuredLicenses.length = 0;
-                $scope.openLicenses.length = 0;
-                $scope.loadStatus();
-
+                vm.configuredLicenses.length = 0;
+                vm.openLicenses.length = 0;
+                vm.loadStatus();
                 notificationsService.success("License configured", "Umbraco forms have been configured to be used on this website");
             });
         };
 
-        $scope.loadStatus = function () {
+
+        vm.loadStatus = function () {
             licensingResource.getLicenseStatus().then(function (response) {
-                $scope.status = response.data;
+                vm.status = response.data;
+                vm.isLoading = false;
             });
 
             updatesResource.getUpdateStatus().then(function (response) {
-                $scope.version = response.data;
+                vm.version = response.data;
             });
 
             updatesResource.getVersion().then(function (response) {
-                $scope.currentVersion = response.data;
+                vm.currentVersion = response.data;
             });
 
             updatesResource.getSavePlainTextPasswordsConfiguration().then(function (response) {
-                $scope.savePlainTextPasswords = response.data.toString() === "true";
+                vm.savePlainTextPasswords = response.data.toString() === "true";
             });
 
 
-        };        
+        };
 
-        $scope.upgrade = function () {
-
+        //TODO: Can this die/go away?!
+        vm.upgrade = function () {
             //Let's tripple check the user is of the userType Admin
             if (!$scope.isAdminUser) {
                 //The user is not an admin & should have not hit this method but if they hack the UI they could potnetially see the UI perhaps?
@@ -548,101 +554,57 @@ angular.module("umbraco")
                 return;
             }
 
-            $scope.installing = true;
+            vm.installing = true;
             updatesResource.installLatest($scope.version.remoteVersion).then(function (response) {
                 window.location.reload();
             }, function (reason) {
                 //Most likely the 403 Unauthorised back from server side
                 //The error is caught already & shows a notification so need to do it here
-                //But stop the loading bar from spinnging forever
-                $scope.installing = false;
+                //But stop the loading bar from spining forever
+                vm.installing = false;
             });
         };
 
 
-        $scope.create = function () {
-            
+        vm.create = function () {
+
             //Let's tripple check the user is of the userType Admin
-            if (!$scope.userCanManageForms) {
+            if (!vm.userCanManageForms) {
                 //The user is not an admin & should have not hit this method but if they hack the UI they could potnetially see the UI perhaps?
                 notificationsService.error("Insufficient Permissions", "You do not have permissions to create & manage forms");
                 return;
             }
 
-            //Get the current umbraco version we are using
-            var umbracoVersion = Umbraco.Sys.ServerVariables.application.version;
-            
-            var compareOptions = {
-                zeroExtend: true
-            };
-            
-            //Check what version of Umbraco we have is greater than 7.4 or not 
-            //So we can load old or new editor UI
-            var versionCompare = utilityService.compareVersions(umbracoVersion, "7.4", compareOptions);
-            
-            //If value is 0 then versions are an exact match
-            //If 1 then we are greater than 7.4.x
-            //If it's -1 then we are less than 7.4.x
-            if(versionCompare < 0) {
-                //I am less than 7.4 - load the legacy editor
-                $location.url("forms/form/edit-legacy/-1?template=&create=true");
-            }
-            else {
-                //I am 7.4 or newer - load in shiny new UI
-                $location.url("forms/form/edit/-1?template=&create=true");
-            }
-            
-            
+            $location.url("forms/form/edit/-1?template=&create=true");
         };
 
 
-        $scope.configuration = { domain: window.location.hostname };
-        $scope.loadStatus();
-    });
+        vm.configuration = { domain: window.location.hostname };
+        vm.loadStatus();
 
-angular.module("umbraco").controller("UmbracoForms.Dashboards.YourFormsController", function ($scope,$location, formResource, recordResource, userService, securityResource, utilityService) {
 
-    var vm = this;
+        /////////////////////
 
-    vm.entriesUrl = 'entries';
-		
-    //Get the current umbraco version we are using
-    var umbracoVersion = Umbraco.Sys.ServerVariables.application.version;
-    
-    var compareOptions = {
-        zeroExtend: true
-    };
-    
-    //Check what version of Umbraco we have is greater than 7.4 or not 
-    //So we can load old or new editor UI
-    var versionCompare = utilityService.compareVersions(umbracoVersion, "7.4", compareOptions);
-    
-    //If value is 0 then versions are an exact match
-    //If 1 then we are greater than 7.4.x
-    //If it's -1 then we are less than 7.4.x
-    if(versionCompare < 0) {
-        //I am less than 7.4 - load the legacy editor
-        vm.entriesUrl = 'entries-legacy';
-    }
+        vm.formsLimit = 4; //Show top 4 by default
 
-   vm.formsLimit = 4;
+        vm.showAllOverviews = function(){
+            vm.formsLimit = 500; //TODO: Can this work if we set to null/undefinied or some kind of max?!
+        };
 
-    vm.showAll = function(){
-        vm.formsLimit = 50;
-    };
+        //Get all forms overviews (number of entries)
+        formResource.getOverView().then(function(response){
+            vm.forms = response.data;
 
-    formResource.getOverView().then(function(response){
-        vm.forms = response.data;
+            _.each(vm.forms, function(form){
+                var filter = { form: form.id };
 
-        _.each(vm.forms, function(form){
-            var filter = { form: form.id };
-
-            recordResource.getRecordsCount(filter).then(function(response){
+                recordResource.getRecordsCount(filter).then(function(response){
                     form.entries = response.data.count;
+                });
             });
         });
+
     });
-});
 
 angular.module("umbraco")
 .controller("UmbracoForms.Editors.DataSource.DeleteController",
@@ -660,7 +622,7 @@ angular.module("umbraco")
 	        navigationService.hideNavigation();
 	    };
 	});
-angular.module("umbraco").controller("UmbracoForms.Editors.DataSource.EditController", function ($scope, $routeParams, dataSourceResource, editorState, notificationsService, dialogService, navigationService, userService, securityResource) {
+angular.module("umbraco").controller("UmbracoForms.Editors.DataSource.EditController", function ($scope, $routeParams, dataSourceResource, editorState, notificationsService, editorService, navigationService, userService, securityResource) {
     
     //On load/init of 'editing' a prevalue source then
     //Let's check & get the current user's form security
@@ -710,7 +672,6 @@ angular.module("umbraco").controller("UmbracoForms.Editors.DataSource.EditContro
 		});
     }
     else {
-       
 	        //we are editing so get the content item from the server
 	        dataSourceResource.getByGuid($routeParams.id)
             .then(function (response) {
@@ -740,12 +701,15 @@ angular.module("umbraco").controller("UmbracoForms.Editors.DataSource.EditContro
 	
 	        //set settings
 	        $scope.dataSource.settings = {};
-	        angular.forEach($scope.dataSource.$type.settings, function (setting) {
-	            var key = setting.alias;
-	            var value = setting.value;
-	            $scope.dataSource.settings[key] = value;
-	           
-	        });
+	        if($scope.dataSource.$type){
+                angular.forEach($scope.dataSource.$type.settings, function (setting) {
+                    var key = setting.alias;
+                    var value = setting.value;
+                    $scope.dataSource.settings[key] = value;
+
+                });
+            }
+	       
 	        //validate settings
 	        dataSourceResource.validateSettings($scope.dataSource)
             .then(function (response) {
@@ -785,10 +749,13 @@ angular.module("umbraco").controller("UmbracoForms.Editors.DataSource.EditContro
 	    };
 
 	    $scope.showWizard = function() {
-	        dialogService.open({
-	            template: "/app_plugins/UmbracoForms/Backoffice/Datasource/dialogs/wizard.html",
-	            dataSourceId: $scope.dataSource.id
-            });
+            var dataSourcesSettings = {
+                view: "/app_plugins/UmbracoForms/Backoffice/Datasource/dialogs/wizard.html",
+                dataSourceId: $scope.dataSource.id,
+                size: 'small'
+            };
+
+            editorService.open(dataSourcesSettings);
 	    };
 
 	    var setTypeAndSettings = function () {
@@ -812,11 +779,10 @@ angular.module("umbraco").controller("UmbracoForms.Editors.DataSource.EditContro
 	});
 angular.module("umbraco")
 .controller("UmbracoForms.Editors.DataSource.WizardController",
-	function ($scope, $routeParams, dataSourceWizardResource, navigationService, notificationsService, dialogService) {
+	function ($scope, $routeParams, dataSourceWizardResource, navigationService, notificationsService, editorService) {
 
 	    $scope.currentStep = 1;
-
-	    dataSourceWizardResource.getScaffold($scope.dialogOptions.dataSourceId).then(function (response) {
+	    dataSourceWizardResource.getScaffold($scope.model.dataSourceId).then(function (response) {
 
 	         $scope.wizard = response.data;
 
@@ -834,11 +800,16 @@ angular.module("umbraco")
 
 	        dataSourceWizardResource.createForm($scope.wizard)
 	            .then(function (resp) {
-	                dialogService.closeAll();
+                    editorService.closeAll();
 	                notificationsService.success("Form created", "");
 	            });
 	    };
 
+
+        $scope.cancel = function() {
+            editorService.closeAll();
+        };
+        
 	    $scope.gotoStep = function (step) {
 	        $scope.currentStep = step;
 	    }
@@ -881,41 +852,25 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.CopyController",
             navigationService.hideNavigation();
         }
 	});
-angular.module("umbraco").controller("UmbracoForms.Editors.Form.CreateController", function ($scope, $routeParams, formResource, editorState, notificationsService, utilityService) {
-		
-		//Use the vm approach as opposed to $scope
-		var vm = this;
-		vm.editUrl = 'edit';
-		
-		//Get the current umbraco version we are using
-		var umbracoVersion = Umbraco.Sys.ServerVariables.application.version;
-		
-		var compareOptions = {
-			zeroExtend: true
+angular.module("umbraco").controller("UmbracoForms.Editors.Form.CreateController", function ($scope, $routeParams, formResource, editorState, notificationsService, utilityService, navigationService) {
+		formResource.getAllTemplates().then(function(response) {
+            $scope.formTemplates = response.data;
+		});
+
+		$scope.hideNavigation = function(){
+			navigationService.hideNavigation();
 		};
 		
-		//Check what version of Umbraco we have is greater than 7.4 or not 
-		//So we can load old or new editor UI
-		var versionCompare = utilityService.compareVersions(umbracoVersion, "7.4", compareOptions);
-		
-		//If value is 0 then versions are an exact match
-		//If 1 then we are greater than 7.4.x
-		//If it's -1 then we are less than 7.4.x
-		if(versionCompare < 0) {
-			//I am less than 7.4 - load the legacy editor
-			vm.editUrl = 'edit-legacy';
-		}
-		
-		formResource.getAllTemplates().then(function(response) {
-		   vm.formTemplates = response.data;
-		});
+		$scope.hideDialog = function(showMenu){
+			navigationService.hideDialog(showMenu);
+		};
 });
 angular.module("umbraco")
 .controller("UmbracoForms.Editors.Form.DeleteController",
 	function ($scope, formResource, navigationService, treeService) {
+
 	    $scope.delete = function (id) {
 	        formResource.deleteByGuid(id).then(function () {
-
 	            treeService.removeNode($scope.currentNode);
 	            navigationService.hideNavigation();
 
@@ -928,344 +883,371 @@ angular.module("umbraco")
 	});
 angular.module("umbraco").controller("UmbracoForms.Editors.Form.EditController",
 
-function ($scope, $routeParams, formResource, editorState, dialogService, formService, notificationsService, contentEditingHelper, formHelper, navigationService, userService, securityResource, localizationService, workflowResource) {
+    function ($scope, $routeParams, formResource, editorState, editorService, formService, notificationsService, contentEditingHelper, formHelper, navigationService, userService, securityResource, localizationService, workflowResource) {
 
-    //On load/init of 'editing' a form then
-    //Let's check & get the current user's form security
-    var currentUserId = null;
-    var currentFormSecurity = null;
+        
+        //On load/init of 'editing' a form then
+        //Let's check & get the current user's form security
+        var currentUserId = null;
+        var currentFormSecurity = null;
 
-    //By default set to have access (in case we do not find the current user's per indivudal form security item)
-    $scope.hasAccessToCurrentForm = true;
+        $scope.page = {
+            loading: true
+        };
+        $scope.page.contentApps = [];
 
-    $scope.displayEditor = true;
+        //By default set to have access (in case we do not find the current user's per individual form security item)
+        $scope.hasAccessToCurrentForm = true;
 
-    $scope.page = {};
+        $scope.displayEditor = true;
 
-    $scope.page.navigation = [
-    {
-        "name": localizationService.localize("general_design"),
-        "icon": "icon-document-dashed-line",
-        "view": "/App_Plugins/UmbracoForms/Backoffice/Form/views/design/design.html",
-        "active": true
-    },
-    {
-        "name": "Settings",
-        "icon": "icon-settings",
-        "view": "/App_Plugins/UmbracoForms/Backoffice/Form/views/settings/settings.html"
-    }];
+        $scope.init = function () {
+            createAndLocalizeApps();
+        };
 
-    userService.getCurrentUser().then(function (response) {
-        currentUserId = response.id;
+        function createAndLocalizeApps() {
+            localizationService.localize("general_design").then(function (val) {
 
-        //Now we can make a call to form securityResource
-        securityResource.getByUserId(currentUserId).then(function (response) {
-            $scope.security = response.data;
+                $scope.page.contentApps.push(
+                    {
+                        "name": val,
+                        "alias": "design",
+                        "icon": "icon-document-dashed-line",
+                        "view": "/App_Plugins/UmbracoForms/Backoffice/Form/views/design/design.html",
+                        "active": true
+                    }
+                );
+            });
 
-            //Use _underscore.js to find a single item in the JSON array formsSecurity
-            //where the FORM guid matches the one we are currently editing (if underscore does not find an item it returns an empty array)
-            //As _.findWhere not in Umb .1.6 using _.where() that lists multiple matches - checking that we have only item in the array (ie one match)
-            currentFormSecurity = _.where(response.data.formsSecurity, { Form: $routeParams.id });
+            localizationService.localize("general_settings").then(function (val) {
 
-            if (currentFormSecurity.length === 1) {
-                //Check & set if we have access to the form
-                //if we have no entry in the JSON array by default its set to true (so won't prevent)
-                $scope.hasAccessToCurrentForm = currentFormSecurity[0].HasAccess;
-            }
+                $scope.page.contentApps.push(
+                    {
+                        "name": val,
+                        "alias": "settings",
+                        "icon": "icon-settings",
+                        "view": "/App_Plugins/UmbracoForms/Backoffice/Form/views/settings/settings.html",
+                        "active": false
+                    }
+                );
+            });
+        }
 
-            //Check if we have access to current form OR manage forms has been disabled
-            if (!$scope.hasAccessToCurrentForm || !$scope.security.userSecurity.manageForms) {
+        userService.getCurrentUser().then(function (response) {
+            currentUserId = response.id;
 
-                //Show error notification
-                notificationsService.error("Access Denied", "You do not have access to edit this form");
+            //Now we can make a call to form securityResource
+            securityResource.getByUserId(currentUserId).then(function (response) {
+                $scope.security = response.data;
+
+                //Use _underscore.js to find a single item in the JSON array formsSecurity
+                //where the FORM guid matches the one we are currently editing (if underscore does not find an item it returns an empty array)
+                //As _.findWhere not in Umb .1.6 using _.where() that lists multiple matches - checking that we have only item in the array (ie one match)
+                currentFormSecurity = _.where(response.data.formsSecurity, { Form: $routeParams.id });
+
+                if (currentFormSecurity.length === 1) {
+                    //Check & set if we have access to the form
+                    //if we have no entry in the JSON array by default its set to true (so won't prevent)
+                    $scope.hasAccessToCurrentForm = currentFormSecurity[0].HasAccess;
+                }
+
+                //Check if we have access to current form OR manage forms has been disabled
+                if (!$scope.hasAccessToCurrentForm || !$scope.security.userSecurity.manageForms) {
+
+                    //Show error notification
+                    notificationsService.error("Access Denied", "You do not have access to edit this form");
 
 
-                //Resync tree so that it's removed & hides
-                navigationService.syncTree({ tree: "form", path: ['-1'], forceReload: true, activate: false }).then(function(response) {
+                    //Resync tree so that it's removed & hides
+                    navigationService.syncTree({ tree: "form", path: ['-1'], forceReload: true, activate: false }).then(function (response) {
 
-                    //Response object contains node object & activate bool
-                    //Can then reload the root node -1 for this tree 'Forms Folder'
-                    navigationService.reloadNode(response.node);
+                        //Response object contains node object & activate bool
+                        //Can then reload the root node -1 for this tree 'Forms Folder'
+                        navigationService.reloadNode(response.node);
+                    });
+
+                    //Don't need to wire anything else up
+                    return;
+                }
+            });
+        });
+
+
+        if ($routeParams.create) {
+
+            //we are creating so get an empty data type item
+            //formResource.getScaffold($routeParams.template)
+            formResource.getScaffoldWithWorkflows($routeParams.template)
+                .then(function (response) {
+                    $scope.form = response.data;
+
+                    //set a shared state
+                    editorState.set($scope.form);
+
+                    $scope.page.loading = false;
                 });
 
-                //Don't need to wire anything else up
-                return;
-            }
-        });
-    });
+        } else {
+
+            $scope.workflowsUrl = "#/forms/form/workflows/" + $routeParams.id;
+            $scope.entriesUrl = "#/forms/form/entries/" + $routeParams.id;
 
 
-    if ($routeParams.create) {
+            //we are editing so get the content item from the server
+            formResource.getWithWorkflowsByGuid($routeParams.id)
+                .then(function (response) {
 
-		//we are creating so get an empty data type item
-	    //formResource.getScaffold($routeParams.template)
-        formResource.getScaffoldWithWorkflows($routeParams.template)
-	        .then(function(response) {
-	            $scope.form = response.data;
+                    //As we are editing an item we can highlight it in the tree
+                    navigationService.syncTree({ tree: "form", path: [String($routeParams.id)], forceReload: false });
 
-				//set a shared state
-				editorState.set($scope.form);
-			});
+                    $scope.form = response.data;
+                    $scope.saved = true;
 
-    } else {
-
-		$scope.workflowsUrl = "#/forms/form/workflows/" +$routeParams.id;
-		$scope.entriesUrl = "#/forms/form/entries/" +$routeParams.id;
-
-
-		//we are editing so get the content item from the server
-        formResource.getWithWorkflowsByGuid($routeParams.id)
-			.then(function (response) {
-
-			    //As we are editing an item we can highlight it in the tree
-			    navigationService.syncTree({ tree: "form", path: [String($routeParams.id)], forceReload: false });
-
-				$scope.form = response.data;
-				$scope.saved = true;
-
-                // this should be removed in next major version
-                angular.forEach($scope.form.pages, function(page){
-                    angular.forEach(page.fieldSets, function(fieldSet){
-                        angular.forEach(fieldSet.containers, function(container){
-                            angular.forEach(container.fields, function(field){
-                                field.removePrevalueEditor = true;
+                    // this should be removed in next major version
+                    angular.forEach($scope.form.pages, function (page) {
+                        angular.forEach(page.fieldSets, function (fieldSet) {
+                            angular.forEach(fieldSet.containers, function (container) {
+                                angular.forEach(container.fields, function (field) {
+                                    field.removePrevalueEditor = true;
+                                });
                             });
                         });
                     });
+
+                    //set a shared state
+                    editorState.set($scope.form);
+
+                    $scope.page.loading = false;
+                }, function (reason) {
+                    //Includes ExceptionMessage, StackTrace etc from the WebAPI
+                    var jsonErrorResponse = reason.data;
+
+                    //Show notification message, a sticky Error message
+                    notificationsService.add({ headline: "Unable to load form", message: jsonErrorResponse.ExceptionMessage, type: 'error', sticky: true });
+
+                    //Hide the entire form UI
+                    $scope.displayEditor = false;
                 });
 
-				//set a shared state
-				editorState.set($scope.form);
-			}, function(reason) {
-                //Includes ExceptionMessage, StackTrace etc from the WebAPI
-                var jsonErrorResponse = reason.data;
-                
-                //Show notification message, a sticky Error message
-                notificationsService.add({ headline: "Unable to load form", message: jsonErrorResponse.ExceptionMessage, type: 'error', sticky: true  });
-                
-                //Hide the entire form UI
-                $scope.displayEditor = false;
-            });
 
+        }
 
-	}
+        $scope.editForm = function (form, section) {
+            editorService.open(
+                {
+                    template: "/app_plugins/UmbracoForms/Backoffice/Form/dialogs/formsettings.html",
+                    form: form,
+                    section: section,
+                    page: $scope.currentPage
+                });
+        };
 
-	$scope.editForm = function(form, section){
-		dialogService.open(
-			{
-				template: "/app_plugins/UmbracoForms/Backoffice/Form/dialogs/formsettings.html",
-				form: form,
-				section: section,
-				page: $scope.currentPage
-			});
-	};
+        $scope.save = function () {
+            if (formHelper.submitForm({ scope: $scope })) {
 
-	$scope.save = function(){
-	    if (formHelper.submitForm({ scope: $scope })) {
+                $scope.page.saveButtonState = "busy";
 
-            $scope.page.saveButtonState = "busy";
+                //make sure we set correct widths on all containers
+                formService.syncContainerWidths($scope.form);
 
-	        //make sure we set correct widths on all containers
-	        formService.syncContainerWidths($scope.form);
+                formResource.saveWithWorkflows($scope.form).then(function (response) {
+                    formHelper.resetForm({ scope: $scope });
 
-            formResource.saveWithWorkflows($scope.form).then(function (response) {
-	            formHelper.resetForm({ scope: $scope });
+                    contentEditingHelper.handleSuccessfulSave({
+                        scope: $scope,
+                        savedContent: response.data
+                    });
 
-	            contentEditingHelper.handleSuccessfulSave({
-	                scope: $scope,
-	                savedContent: response.data
-	            });
+                    $scope.ready = true;
 
-	            $scope.ready = true;
+                    //set a shared state
+                    editorState.set($scope.form);
 
-	            //set a shared state
-	            editorState.set($scope.form);
+                    $scope.page.saveButtonState = "success";
+                    navigationService.syncTree({ tree: "form", path: [String($scope.form.id)], forceReload: true });
+                    notificationsService.success("Form saved", "");
 
-	            $scope.page.saveButtonState = "success";
-	            navigationService.syncTree({ tree: "form", path: [String($scope.form.id)], forceReload: true });
-	            notificationsService.success("Form saved", "");
+                }, function (err) {
 
-	        }, function (err) {
-
-                contentEditingHelper.handleSaveError({
+                    contentEditingHelper.handleSaveError({
                         redirectOnFailure: false,
                         err: err
                     });
 
-                //show any notifications
-                if (angular.isArray(err.data.notifications)) {
-                    for (var i = 0; i < err.data.notifications.length; i++) {
-                        notificationsService.showNotification(err.data.notifications[i]);
+                    //show any notifications
+                    if (angular.isArray(err.data.notifications)) {
+                        for (var i = 0; i < err.data.notifications.length; i++) {
+                            notificationsService.showNotification(err.data.notifications[i]);
+                        }
                     }
-                }
 
-                $scope.page.saveButtonState = "error";
-
-
-	        });
-	    }
-
-	};
+                    $scope.page.saveButtonState = "error";
 
 
-});
-
-angular.module("umbraco").controller("UmbracoForms.Editors.Form.EditLegacyController",
-
-function ($scope, $routeParams, formResource, editorState, dialogService, formService, notificationsService, contentEditingHelper, formHelper, navigationService, userService, securityResource) {
-
-    //On load/init of 'editing' a form then
-    //Let's check & get the current user's form security
-    var currentUserId = null;
-    var currentFormSecurity = null;
-
-    //By default set to have access (in case we do not find the current user's per indivudal form security item)
-    $scope.hasAccessToCurrentForm = true;
-
-    userService.getCurrentUser().then(function (response) {
-        currentUserId = response.id;
-
-        //Now we can make a call to form securityResource
-        securityResource.getByUserId(currentUserId).then(function (response) {
-            $scope.security = response.data;
-
-            //Use _underscore.js to find a single item in the JSON array formsSecurity
-            //where the FORM guid matches the one we are currently editing (if underscore does not find an item it returns an empty array)
-            //As _.findWhere not in Umb .1.6 using _.where() that lists multiple matches - checking that we have only item in the array (ie one match)
-            currentFormSecurity = _.where(response.data.formsSecurity, { Form: $routeParams.id });
-
-            if (currentFormSecurity.length === 1) {
-                //Check & set if we have access to the form
-                //if we have no entry in the JSON array by default its set to true (so won't prevent)
-                $scope.hasAccessToCurrentForm = currentFormSecurity[0].HasAccess;
-            }
-
-            //Check if we have access to current form OR manage forms has been disabled
-            if (!$scope.hasAccessToCurrentForm || !$scope.security.userSecurity.manageForms) {
-
-                //Show error notification
-                notificationsService.error("Access Denied", "You do not have access to edit this form");
-
-
-                //Resync tree so that it's removed & hides
-                navigationService.syncTree({ tree: "form", path: ['-1'], forceReload: true, activate: false }).then(function(response) {
-
-                    //Response object contains node object & activate bool
-                    //Can then reload the root node -1 for this tree 'Forms Folder'
-                    navigationService.reloadNode(response.node);
                 });
-
-                //Don't need to wire anything else up
-                return;
             }
-        });
+
+        };
+
+
     });
 
+// angular.module("umbraco").controller("UmbracoForms.Editors.Form.EditLegacyController",
+//
+// function ($scope, $routeParams, formResource, editorState, dialogService, formService, notificationsService, contentEditingHelper, formHelper, navigationService, userService, securityResource) {
+//
+//     //On load/init of 'editing' a form then
+//     //Let's check & get the current user's form security
+//     var currentUserId = null;
+//     var currentFormSecurity = null;
+//
+//     //By default set to have access (in case we do not find the current user's per indivudal form security item)
+//     $scope.hasAccessToCurrentForm = true;
+//
+//     userService.getCurrentUser().then(function (response) {
+//         currentUserId = response.id;
+//
+//         //Now we can make a call to form securityResource
+//         securityResource.getByUserId(currentUserId).then(function (response) {
+//             $scope.security = response.data;
+//
+//             //Use _underscore.js to find a single item in the JSON array formsSecurity
+//             //where the FORM guid matches the one we are currently editing (if underscore does not find an item it returns an empty array)
+//             //As _.findWhere not in Umb .1.6 using _.where() that lists multiple matches - checking that we have only item in the array (ie one match)
+//             currentFormSecurity = _.where(response.data.formsSecurity, { Form: $routeParams.id });
+//
+//             if (currentFormSecurity.length === 1) {
+//                 //Check & set if we have access to the form
+//                 //if we have no entry in the JSON array by default its set to true (so won't prevent)
+//                 $scope.hasAccessToCurrentForm = currentFormSecurity[0].HasAccess;
+//             }
+//
+//             //Check if we have access to current form OR manage forms has been disabled
+//             if (!$scope.hasAccessToCurrentForm || !$scope.security.userSecurity.manageForms) {
+//
+//                 //Show error notification
+//                 notificationsService.error("Access Denied", "You do not have access to edit this form");
+//
+//
+//                 //Resync tree so that it's removed & hides
+//                 navigationService.syncTree({ tree: "form", path: ['-1'], forceReload: true, activate: false }).then(function(response) {
+//
+//                     //Response object contains node object & activate bool
+//                     //Can then reload the root node -1 for this tree 'Forms Folder'
+//                     navigationService.reloadNode(response.node);
+//                 });
+//
+//                 //Don't need to wire anything else up
+//                 return;
+//             }
+//         });
+//     });
+//
+//
+//     if ($routeParams.create) {
+//
+// 		//we are creating so get an empty data type item
+// 	    formResource.getScaffold($routeParams.template)
+// 	        .then(function(response) {
+// 	            $scope.form = response.data;
+// 				$scope.currentPage = {};
+//
+// 	            formResource.getPrevalueSources()
+// 	                .then(function(resp){
+// 	                    $scope.prevaluesources = resp.data;
+// 	            });
+//
+// 				formResource.getAllFieldTypesWithSettings()
+// 					.then(function (resp) {
+// 						$scope.fieldtypes = resp.data;
+// 						$scope.ready = true;
+// 					});
+//
+// 				//set a shared state
+// 				editorState.set($scope.form);
+// 			});
+//
+//     } else {
+//
+// 		$scope.workflowsUrl = "#/forms/form/workflows/" +$routeParams.id;
+// 		$scope.entriesUrl = "#/forms/form/entries/" +$routeParams.id;
+//
+//
+// 		//we are editing so get the content item from the server
+// 		formResource.getByGuid($routeParams.id)
+// 			.then(function (response) {
+//
+// 			    //As we are editing an item we can highlight it in the tree
+// 			    navigationService.syncTree({ tree: "form", path: [String($routeParams.id)], forceReload: false });
+//
+//
+// 				$scope.form = response.data;
+// 				$scope.saved = true;
+//
+// 				formResource.getPrevalueSources()
+// 	                .then(function (resp) {
+// 	                    $scope.prevaluesources = resp.data;
+// 	                });
+//
+// 				formResource.getAllFieldTypesWithSettings()
+// 					.then(function (resp) {
+// 						$scope.fieldtypes = resp.data;
+// 						$scope.ready = true;
+// 					});
+//
+// 				//set a shared state
+// 				editorState.set($scope.form);
+// 			});
+//
+//
+// 	}
+//
+// 	$scope.editForm = function(form, section){
+// 		dialogService.open(
+// 			{
+// 				template: "/app_plugins/UmbracoForms/Backoffice/Form/dialogs/formsettings.html",
+// 				form: form,
+// 				section: section,
+// 				page: $scope.currentPage
+// 			});
+// 	};
+//
+// 	$scope.save = function(){
+//
+// 	    if (formHelper.submitForm({ scope: $scope })) {
+// 	        //make sure we set correct widths on all containers
+// 	        formService.syncContainerWidths($scope.form);
+//
+// 	        formResource.save($scope.form).then(function (response) {
+//
+// 	            formHelper.resetForm({ scope: $scope });
+//
+// 	            contentEditingHelper.handleSuccessfulSave({
+// 	                scope: $scope,
+// 	                savedContent: response.data
+// 	            });
+//
+// 	            $scope.ready = true;
+// 	            //$scope.form = response.data;
+//
+// 	            //set a shared state
+// 	            editorState.set($scope.form);
+//
+// 	            navigationService.syncTree({ tree: "form", path: [String($scope.form.id)], forceReload: true });
+//
+// 	            notificationsService.success("Form saved", "");
+//
+// 	        }, function (err) {
+// 	            notificationsService.error("Form Failed to save", err.data.Message);
+// 	        });
+// 	    }
+//
+// 	};
+//
+//
+// });
 
-    if ($routeParams.create) {
-
-		//we are creating so get an empty data type item
-	    formResource.getScaffold($routeParams.template)
-	        .then(function(response) {
-	            $scope.form = response.data;
-				$scope.currentPage = {};
-
-	            formResource.getPrevalueSources()
-	                .then(function(resp){
-	                    $scope.prevaluesources = resp.data;
-	            });
-
-				formResource.getAllFieldTypesWithSettings()
-					.then(function (resp) {
-						$scope.fieldtypes = resp.data;
-						$scope.ready = true;
-					});
-
-				//set a shared state
-				editorState.set($scope.form);
-			});
-
-    } else {
-
-		$scope.workflowsUrl = "#/forms/form/workflows/" +$routeParams.id;
-		$scope.entriesUrl = "#/forms/form/entries/" +$routeParams.id;
-
-
-		//we are editing so get the content item from the server
-		formResource.getByGuid($routeParams.id)
-			.then(function (response) {
-
-			    //As we are editing an item we can highlight it in the tree
-			    navigationService.syncTree({ tree: "form", path: [String($routeParams.id)], forceReload: false });
-
-
-				$scope.form = response.data;
-				$scope.saved = true;
-
-				formResource.getPrevalueSources()
-	                .then(function (resp) {
-	                    $scope.prevaluesources = resp.data;
-	                });
-
-				formResource.getAllFieldTypesWithSettings()
-					.then(function (resp) {
-						$scope.fieldtypes = resp.data;
-						$scope.ready = true;
-					});
-
-				//set a shared state
-				editorState.set($scope.form);
-			});
-
-
-	}
-
-	$scope.editForm = function(form, section){
-		dialogService.open(
-			{
-				template: "/app_plugins/UmbracoForms/Backoffice/Form/dialogs/formsettings.html",
-				form: form,
-				section: section,
-				page: $scope.currentPage
-			});
-	};
-
-	$scope.save = function(){
-
-	    if (formHelper.submitForm({ scope: $scope })) {
-	        //make sure we set correct widths on all containers
-	        formService.syncContainerWidths($scope.form);
-
-	        formResource.save($scope.form).then(function (response) {
-
-	            formHelper.resetForm({ scope: $scope });
-
-	            contentEditingHelper.handleSuccessfulSave({
-	                scope: $scope,
-	                savedContent: response.data
-	            });
-
-	            $scope.ready = true;
-	            //$scope.form = response.data;
-
-	            //set a shared state
-	            editorState.set($scope.form);
-
-	            navigationService.syncTree({ tree: "form", path: [String($scope.form.id)], forceReload: true });
-
-	            notificationsService.success("Form saved", "");
-
-	        }, function (err) {
-	            notificationsService.error("Form Failed to save", err.data.Message);
-	        });
-	    }
-
-	};
-
-
-});
-
-angular.module("umbraco").controller("UmbracoForms.Editors.Form.EntriesController", function ($scope, $routeParams, recordResource, formResource, dialogService, editorState, userService, securityResource, notificationsService, navigationService) {
+angular.module("umbraco").controller("UmbracoForms.Editors.Form.EntriesController", function ($scope, $routeParams, recordResource, formResource, editorService, editorState, userService, securityResource, notificationsService, navigationService) {
 
     //On load/init of 'editing' a form then
     //Let's check & get the current user's form security
@@ -1291,6 +1273,8 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.EntriesControlle
     vm.prevEntryDetails = prevEntryDetails;
     vm.datePickerChange = datePickerChange;
     vm.toggleRecordState = toggleRecordState;
+    vm.canEditSensitiveData = false;
+    
 
     vm.keyboardShortcutsOverview = [
 
@@ -1326,12 +1310,15 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.EntriesControlle
 
     ];
 
-    //By default set to have access (in case we do not find the current user's per indivudal form security item)
+    //By default set to have access (in case we do not find the current user's per individual form security item)
     $scope.hasAccessToCurrentForm = true;
 
     userService.getCurrentUser().then(function (response) {
         currentUserId = response.id;
         vm.userLocale = response.locale;
+
+        //Set the API controller response on the Angular ViewModel
+        vm.canEditSensitiveData = response.userGroups.indexOf("sensitiveData") !== -1;
 
         //Now we can make a call to form securityResource
         securityResource.getByUserId(currentUserId).then(function (response) {
@@ -1438,31 +1425,17 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.EntriesControlle
 
 
 	$scope.edit = function(schema){
-	    dialogService.open(
+	    editorService.open(
 	            {
-	                template: "/app_plugins/UmbracoForms/Backoffice/Form/dialogs/entriessettings.html",
+	                view: "/app_plugins/UmbracoForms/Backoffice/Form/dialogs/entriessettings.html",
 	                schema: schema,
 	                toggle: $scope.toggleSelection,
 	                hiddenFields: $scope.hiddenFields,
-					filter: $scope.filter
+					filter: $scope.filter,
+                    size: 'small'
 	            });
 	};
-
-	$scope.viewdetail = function(schema, row, event){
-		dialogService.open(
-				{
-					template: "/app_plugins/UmbracoForms/Backoffice/Form/dialogs/entriesdetail.html",
-					schema: schema,
-					row: row,
-					hiddenFields: $scope.hiddenFields
-				});
-
-        if(event) {
-            event.stopPropagation();
-        }
-
-	};
-
+	
 	//$scope.pagination = [];
 
 
@@ -1507,7 +1480,8 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.EntriesControlle
                     name: schemaItem.name,
                     value: valueItem,
                     viewName: schemaItem.view,
-                    view: '/app_plugins/umbracoforms/Backoffice/common/rendertypes/' + schemaItem.view + '.html'
+                    view: '/app_plugins/umbracoforms/Backoffice/common/rendertypes/' + schemaItem.view + '.html',
+                    containsSensitiveData: schemaItem.containsSensitiveData
                 };
 
                 var excludeItems = ["member", "state", "created", "updated"];
@@ -1820,11 +1794,11 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.EntriesControlle
 	        $scope.loadRecords($scope.filter, false);
 
 	        //Show success notification that action excuted
-	        notificationsService.success("Excuted Action", "Successfully excuted action " + action.name);
+	        notificationsService.success("Excuted Action", "Successfully executed action " + action.name);
 
 	    }, function (err) {
 	        //Error Function - so get an error response from API
-	        notificationsService.error("Excuted Action", "Failed to excute action " + action.name + " due to error: " + err);
+	        notificationsService.error("Excuted Action", "Failed to execute action " + action.name + " due to error: " + err);
 	    });
 
 
@@ -1832,15 +1806,19 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.EntriesControlle
 });
 
 angular.module("umbraco").controller("UmbracoForms.Editors.Form.EntriesSettingsController",
-    function($scope, $log, $timeout, exportResource, utilityService){
+    function($scope, $log, $timeout, exportResource, utilityService, editorService){
 
        //The Form ID is found in the filter object we pass into the dialog
-       var formId = $scope.dialogOptions.filter.form;
+       var formId = $scope.model.filter.form;
         
         exportResource.getExportTypes(formId).then(function(response){
             $scope.exportTypes = response.data;
         });
 
+        $scope.close = function(){
+            editorService.closeAll();
+        };
+        
         $scope.export = function(type, filter){
             filter.exportType = type.id;
 			
@@ -1872,366 +1850,184 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.EntriesSettingsC
 
     });
 
-angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.FieldsetSettingController",
-	function ($scope, formService, dialogService) {
-
-	    $scope.deleteConditionRule = function(rules, rule) {
-	        formService.deleteConditionRule(rules, rule);
-	    };
-
-	    $scope.addConditionRule = function (condition) {
-	        formService.addConditionRule(condition);
-	    };
-
-        $scope.close = function() {
-            dialogService.closeAll();
-        }
-	}
-);
-
-angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.FieldSettingController",
-	function ($scope, formService, dialogService) {
-
-	    $scope.deleteConditionRule = function(rules, rule) {
-	        formService.deleteConditionRule(rules, rule);
-	    };
-
-	    $scope.addConditionRule = function (condition) {
-	        formService.addConditionRule(condition);
-	    };
-
-	    $scope.getPrevalues = function (field) {
-	        
-	        formService.loadFieldTypePrevalues(field);
-
-	    };
-
-        $scope.close = function() {
-            
-            $scope.dialogOptions.field.settings = {};
-            angular.forEach($scope.dialogOptions.field.$fieldType.settings, function (setting) {
-                var key = setting.alias;
-                var value = setting.value;
-                $scope.dialogOptions.field.settings[key] = value;
-                dialogService.closeAll();
-            });
-        }
-	});
-
-angular.module("umbraco").controller("UmbracoForms.Editors.Form.WorkflowsController", function ($scope, $routeParams, workflowResource, editorState, dialogService, $window, userService, securityResource, notificationsService, navigationService) {
-
-       
-    //On load/init of 'editing' a form then
-    //Let's check & get the current user's form security
-        var currentUserId = null;
-        var currentFormSecurity = null;
-
-    //By default set to have access (in case we do not find the current user's per indivudal form security item)
-        $scope.hasAccessToCurrentForm = true;
-
-        userService.getCurrentUser().then(function (response) {
-            currentUserId = response.id;
-
-            //Now we can make a call to form securityResource
-            securityResource.getByUserId(currentUserId).then(function (response) {
-                $scope.security = response.data;
-
-                //Use _underscore.js to find a single item in the JSON array formsSecurity 
-                //where the FORM guid matches the one we are currently editing (if underscore does not find an item it returns undefinied)
-                currentFormSecurity = _.where(response.data.formsSecurity, { Form: $routeParams.id });
-
-                if (currentFormSecurity.length === 1) {
-                    //Check & set if we have access to the form
-                    //if we have no entry in the JSON array by default its set to true (so won't prevent)
-                    $scope.hasAccessToCurrentForm = currentFormSecurity[0].HasAccess;
-                }
-
-               //Check if we have access to current form OR manage forms has been disabled
-                if (!$scope.hasAccessToCurrentForm || !$scope.security.userSecurity.manageWorkflows || !$scope.security.userSecurity.manageForms) {
-                    
-                    //Show error notification
-                    notificationsService.error("Access Denied", "You do not have access to edit this form's workflow");
-
-                    //Resync tree so that it's removed & hides
-                    navigationService.syncTree({ tree: "form", path: ['-1'], forceReload: true, activate: false }).then(function (response) {
-
-                        //Response object contains node object & activate bool
-                        //Can then reload the root node -1 for this tree 'Forms Folder'
-                        navigationService.reloadNode(response.node);
-                    });
-
-                    //Don't need to wire anything else up
-                    return;
-                }
-            });
-        });
-        
-        workflowResource.getAllWorkflows($routeParams.id)
-            .then(function(resp) {
-                $scope.workflows = resp.data;
-                $scope.loaded = true;
-
-                //As we are editing an item we can highlight it in the tree
-                navigationService.syncTree({ tree: "form", path: [String($routeParams.id), String($routeParams.id) + "_workflows"], forceReload: true });
-
-            }, function(reason) {
-                //Includes ExceptionMessage, StackTrace etc from the WebAPI
-                var jsonErrorResponse = reason.data;
-                
-                //Show notification message, a sticky Error message
-                notificationsService.add({ headline: "Unable to load form", message: jsonErrorResponse.ExceptionMessage, type: 'error', sticky: true  });
-                
-                //Hide the entire workflows UI
-                $scope.loaded = false;
-            });
-
-        $scope.sortableOptions = {
-            handle: '.handle',
-            cursor: "move",
-            connectWith: '.workflows',
-            update: function (e, ui) {
-                var wfGuids = [];
-                var wfcount = 0;
-
-                //Gets the submitted or approved workflow type from a rel attribute
-                var state = ui.item.parent().attr("rel");
-
-                //Get the previous position of item & new position
-                var newIndex = ui.item.sortable.dropindex;
-                var originalIndex = ui.item.sortable.index;
-
-                //Make a copy - as modifying the bound $workflows freaks the UI sort order
-                $scope.workflowCopy = angular.copy($scope.workflows);
-
-                // A move has happened...
-                if (originalIndex > -1) {
-                    //Get the item we moved
-                    //So we can reinsert it at its new position
-                    var movedElement = $scope.workflowCopy[originalIndex];
-
-                    //Delete one item at its original position
-                    $scope.workflowCopy.splice(originalIndex, 1);
-
-                    //At new position don't delete any items, but insert our new item
-                    $scope.workflowCopy.splice(newIndex, 0, movedElement);
-                }
-
-                //So rather than using the DOM as previous - use the actual data bound
-                //We can foreach & check for the state matches the property 'executesOn'
-                //Then push new item into the wfGuids array
-                angular.forEach($scope.workflowCopy, function(value, key) {
-
-                    if(value.executesOn === state){
-                        //Push the GUID of the workflow into the simple string array
-                        this.push(value.id);
-                    }
-
-                }, wfGuids);
-
-                //Push the updated order of GUIDs to the server
-                workflowResource.updateSortOrder(state, wfGuids).then(function () {
-                    //We should notify the user that the sort order got updated
-                    notificationsService.success("Success", "The sort order of workflows has been updated");
-                });
-
-
-                // $scope.$apply(function(){
-                    
-                // });
-            }
-        };
-
-        $scope.deleteWorkflow = function (workflow) {
-            var deleteWorkflow = $window.confirm('Are you sure you want to delete the workflow?');
-
-            if (deleteWorkflow) {
-                workflowResource.deleteByGuid(workflow.id).then(function() {
-                    $scope.workflows.splice($scope.workflows.indexOf(workflow), 1);
-
-                });
-            }
-        };
-
-        $scope.updateWorkflow = function(state, workflow) {
-            data = {};
-            data.workflow = workflow;
-            data.state = state;
-            data.form = $routeParams.id;
-            data.add = false;
-
-            dialogService.open({
-                template: '/app_plugins/UmbracoForms/Backoffice/Form/dialogs/workflow.html',
-                show: true,
-                callback: update,
-                dialogData: data,
-                workflows: $scope.workflows
-        });
-        };
-
-        $scope.addWorkflow = function(state) {
-            data = {};
-            data.state = state;
-            data.form = $routeParams.id;
-            data.add = true;
-
-            //Before we open the dialog 
-            //Get the total number of items found in $scope.workflows currently
-            //As its a zero based index that is used for sortOrder on the workflow objects
-            //We can pass the direct number of items as the sortOrder count that needs to be set on this item
-            var countOfItems = $scope.workflows.length;
-
-            //Append it to the JSON data object we pass into the dialog
-            data.newSortOrder = countOfItems;
-
-            dialogService.open({
-                template: '/app_plugins/UmbracoForms/Backoffice/Form/dialogs/workflow.html',
-                show: true,
-                callback: add,
-                dialogData: data
-            });
-        };
-
-        function add(data) {
-
-            $scope.workflows.push(data);
-        }
-
-        function update(data) {
-            
-        }
-    });
-angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.WorkflowsController",
-	function ($scope, $routeParams, workflowResource, dialogService, notificationsService, $window) {
-
-	    if ($scope.dialogData.workflow) {
-	        //edit exisiting workflow
-	        $scope.workflow = $scope.dialogData.workflow;
-	        workflowResource.getAllWorkflowTypesWithSettings()
-	            .then(function (resp) {
-	                $scope.types = resp.data;
-	                setTypeAndSettings();
-	            });
-
-	    } else {
-	        //creating a new workflow
-	        workflowResource.getScaffold()
-	            .then(function(response) {
-	                $scope.loaded = true;
-	                $scope.workflow = response.data;
-	                $scope.workflow.executesOn = $scope.dialogData.state;
-	                $scope.workflow.form = $scope.dialogData.form;
-	                $scope.workflow.active = true;
-
-					//Pull through the new sortOrder that this item should be given
-					//As we save the item/JSON down to disk when we save the item in this dialog
-					$scope.workflow.sortOrder = $scope.dialogData.newSortOrder;
-
-	                workflowResource.getAllWorkflowTypesWithSettings()
-	                    .then(function(resp) {
-	                        $scope.types = resp.data;
-
-	                    });
-
-	            });
-	    }
-
-
-	    $scope.setType = function () {
-	        setTypeAndSettings();
-	    };
-
-	    $scope.close = function () {
-	       
-	        dialogService.closeAll();
-	    };
-
-	    $scope.add = function () {
-	       
-	        save();
-	        
-	    };
-
-	    $scope.update = function () {
-	       
-	        save();
-	        
-	    };
-
-        $scope.delete = function() {
-            var deleteWorkflow = $window.confirm('Are you sure you want to delete the workflow?');
-
-            if (deleteWorkflow) {
-                workflowResource.deleteByGuid($scope.workflow.id).then(function () {
-                    $scope.dialogOptions.workflows.splice($scope.dialogOptions.workflows.indexOf($scope.workflow), 1);
-
-                    notificationsService.success("Workflow deleted", "");
-                    //$scope.submit($scope.workflow);
-                    dialogService.closeAll();
-
-                });
-            }
-        }
-
-	    var save = function() {
-	        //set settings
-	        $scope.workflow.settings = {};
-	        angular.forEach($scope.workflow.$type.settings, function (setting) {
-	            var key = setting.alias;
-	            var value = setting.value;
-	            $scope.workflow.settings[key] = value;
-	        });
-	        //validate settings
-	        workflowResource.validateSettings($scope.workflow)
-                .then(function (response) {
-
-                    $scope.errors = response.data;
-
-                    if ($scope.errors.length > 0) {
-                        angular.forEach($scope.errors, function (error) {
-
-                            notificationsService.error("Workflow failed to save", error.Message);
-                        });
-                    } else {
-                        //save
-                        workflowResource.save($scope.workflow)
-                        .then(function (response) {
-
-                            $scope.workflow = response.data;
-                           
-                            setTypeAndSettings();
-                           
-                            notificationsService.success("Workflow saved", "");
-                            $scope.submit($scope.workflow);
-                            dialogService.closeAll();
-
-                        }, function (err) {
-                            notificationsService.error("Workflow failed to save", "");
-                        });
-                    }
-
-                }, function (err) {
-                    notificationsService.error("Workflow failed to save", "Please check if your settings are valid");
-                });
-	    };
-
-	    var setTypeAndSettings = function () {
-	        $scope.workflow.$type = _.where($scope.types, { id: $scope.workflow.workflowTypeId })[0];
-	        if (!$scope.workflow.name) {
-	            $scope.workflow.name = $scope.workflow.$type.name;
-	        }
-	        //set settings
-	        angular.forEach($scope.workflow.settings, function (setting) {
-	            for (var key in $scope.workflow.settings) {
-	                if ($scope.workflow.settings.hasOwnProperty(key)) {
-	                    if (_.where($scope.workflow.$type.settings, { alias: key }).length > 0) {
-	                        _.where($scope.workflow.$type.settings, { alias: key })[0].value = $scope.workflow.settings[key];
-	                    }
-
-	                }
-	            }
-	        });
-	    };
-	});
+// angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.FieldsetSettingController",
+// 	function ($scope, formService, dialogService) {
+//
+// 	    $scope.deleteConditionRule = function(rules, rule) {
+// 	        formService.deleteConditionRule(rules, rule);
+// 	    };
+//
+// 	    $scope.addConditionRule = function (condition) {
+// 	        formService.addConditionRule(condition);
+// 	    };
+//
+//         $scope.close = function() {
+//             dialogService.closeAll();
+//         }
+// 	}
+// );
+
+// angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.FieldSettingController",
+// 	function ($scope, formService, dialogService) {
+//
+// 	    $scope.deleteConditionRule = function(rules, rule) {
+// 	        formService.deleteConditionRule(rules, rule);
+// 	    };
+//
+// 	    $scope.addConditionRule = function (condition) {
+// 	        formService.addConditionRule(condition);
+// 	    };
+//
+// 	    $scope.getPrevalues = function (field) {
+//	        
+// 	        formService.loadFieldTypePrevalues(field);
+//
+// 	    };
+//
+//         $scope.close = function() {
+//            
+//             $scope.dialogOptions.field.settings = {};
+//             angular.forEach($scope.dialogOptions.field.$fieldType.settings, function (setting) {
+//                 var key = setting.alias;
+//                 var value = setting.value;
+//                 $scope.dialogOptions.field.settings[key] = value;
+//                 dialogService.closeAll();
+//             });
+//         }
+// 	});
+
+// angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.WorkflowsController",
+// 	function ($scope, $routeParams, workflowResource, dialogService, notificationsService, $window) {
+//
+// 	    if ($scope.dialogData.workflow) {
+// 	        //edit exisiting workflow
+// 	        $scope.workflow = $scope.dialogData.workflow;
+// 	        workflowResource.getAllWorkflowTypesWithSettings()
+// 	            .then(function (resp) {
+// 	                $scope.types = resp.data;
+// 	                setTypeAndSettings();
+// 	            });
+//
+// 	    } else {
+// 	        //creating a new workflow
+// 	        workflowResource.getScaffold()
+// 	            .then(function(response) {
+// 	                $scope.loaded = true;
+// 	                $scope.workflow = response.data;
+// 	                $scope.workflow.executesOn = $scope.dialogData.state;
+// 	                $scope.workflow.form = $scope.dialogData.form;
+// 	                $scope.workflow.active = true;
+//
+// 					//Pull through the new sortOrder that this item should be given
+// 					//As we save the item/JSON down to disk when we save the item in this dialog
+// 					$scope.workflow.sortOrder = $scope.dialogData.newSortOrder;
+//
+// 	                workflowResource.getAllWorkflowTypesWithSettings()
+// 	                    .then(function(resp) {
+// 	                        $scope.types = resp.data;
+//
+// 	                    });
+//
+// 	            });
+// 	    }
+//
+//
+// 	    $scope.setType = function () {
+// 	        setTypeAndSettings();
+// 	    };
+//
+// 	    $scope.close = function () {
+//	       
+// 	        dialogService.closeAll();
+// 	    };
+//
+// 	    $scope.add = function () {
+//	       
+// 	        save();
+//	        
+// 	    };
+//
+// 	    $scope.update = function () {
+//	       
+// 	        save();
+//	        
+// 	    };
+//
+//         $scope.delete = function() {
+//             var deleteWorkflow = $window.confirm('Are you sure you want to delete the workflow?');
+//
+//             if (deleteWorkflow) {
+//                 workflowResource.deleteByGuid($scope.workflow.id).then(function () {
+//                     $scope.dialogOptions.workflows.splice($scope.dialogOptions.workflows.indexOf($scope.workflow), 1);
+//
+//                     notificationsService.success("Workflow deleted", "");
+//                     //$scope.submit($scope.workflow);
+//                     dialogService.closeAll();
+//
+//                 });
+//             }
+//         }
+//
+// 	    var save = function() {
+// 	        //set settings
+// 	        $scope.workflow.settings = {};
+// 	        angular.forEach($scope.workflow.$type.settings, function (setting) {
+// 	            var key = setting.alias;
+// 	            var value = setting.value;
+// 	            $scope.workflow.settings[key] = value;
+// 	        });
+// 	        //validate settings
+// 	        workflowResource.validateSettings($scope.workflow)
+//                 .then(function (response) {
+//
+//                     $scope.errors = response.data;
+//
+//                     if ($scope.errors.length > 0) {
+//                         angular.forEach($scope.errors, function (error) {
+//
+//                             notificationsService.error("Workflow failed to save", error.Message);
+//                         });
+//                     } else {
+//                         //save
+//                         workflowResource.save($scope.workflow)
+//                         .then(function (response) {
+//
+//                             $scope.workflow = response.data;
+//                           
+//                             setTypeAndSettings();
+//                           
+//                             notificationsService.success("Workflow saved", "");
+//                             $scope.submit($scope.workflow);
+//                             dialogService.closeAll();
+//
+//                         }, function (err) {
+//                             notificationsService.error("Workflow failed to save", "");
+//                         });
+//                     }
+//
+//                 }, function (err) {
+//                     notificationsService.error("Workflow failed to save", "Please check if your settings are valid");
+//                 });
+// 	    };
+//
+// 	    var setTypeAndSettings = function () {
+// 	        $scope.workflow.$type = _.where($scope.types, { id: $scope.workflow.workflowTypeId })[0];
+// 	        if (!$scope.workflow.name) {
+// 	            $scope.workflow.name = $scope.workflow.$type.name;
+// 	        }
+// 	        //set settings
+// 	        angular.forEach($scope.workflow.settings, function (setting) {
+// 	            for (var key in $scope.workflow.settings) {
+// 	                if ($scope.workflow.settings.hasOwnProperty(key)) {
+// 	                    if (_.where($scope.workflow.$type.settings, { alias: key }).length > 0) {
+// 	                        _.where($scope.workflow.$type.settings, { alias: key })[0].value = $scope.workflow.settings[key];
+// 	                    }
+//
+// 	                }
+// 	            }
+// 	        });
+// 	    };
+// 	});
 /**
  * @ngdoc controller
  * @name UmbracoForms.Overlays.FieldsetSettingsOverlay
@@ -2241,10 +2037,10 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
  * The controller for the Fieldset Settings dialog
  */
 
-(function() {
+(function () {
     "use strict";
 
-    function FieldsetSettingsOverlay($scope, formService) {
+    function FieldsetSettingsOverlay($scope, formService, editorService) {
 
         var vm = this;
 
@@ -2258,28 +2054,34 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
         vm.addColumn = addColumn;
         vm.removeColumn = removeColumn;
 
+        var oldFieldset = "";
+        var oldContainers = "";
+
         function init() {
             vm.actionTypes = formService.getActionTypes();
             vm.logicTypes = formService.getLogicTypes();
             vm.operators = formService.getOperators();
 
-            if(!$scope.model.fieldset.condition) {
+            if (!$scope.model.fieldset.condition) {
                 $scope.model.fieldset.condition = {};
                 $scope.model.fieldset.condition.actionType = vm.actionTypes[0].value;
                 $scope.model.fieldset.condition.logicType = vm.logicTypes[0].value;
             }
+
+            oldFieldset = angular.copy($scope.model.fieldset);
+            oldContainers = angular.copy($scope.model.fieldset.containers);
         }
 
-        function deleteConditionRule (rules, rule) {
-	        formService.deleteConditionRule(rules, rule);
-	    }
+        function deleteConditionRule(rules, rule) {
+            formService.deleteConditionRule(rules, rule);
+        }
 
-	    function addConditionRule(condition) {
-	        formService.addEmptyConditionRule(condition);
+        function addConditionRule(condition) {
+            formService.addEmptyConditionRule(condition);
             // set default operator
             var lastIndex = condition.rules.length - 1;
             condition.rules[lastIndex].operator = vm.operators[0].value;
-	    }
+        }
 
         function conditionFieldSelected(selectedField, rule) {
             formService.populateConditionRulePrevalues(selectedField, rule, $scope.model.fields);
@@ -2293,6 +2095,18 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
         function removeColumn(container) {
             formService.deleteContainer($scope.model.fieldset, container);
         }
+
+        vm.close = function (model) {
+
+            $scope.model.fieldset.containers = oldContainers;
+            $scope.model.fieldset.condition = oldFieldset;
+
+            editorService.close();
+        };
+
+        vm.submit = function () {
+            editorService.close();
+        };
 
         init();
     }
@@ -2310,67 +2124,82 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
  * The controller for the Field Settings dialog
  */
 
-(function() {
+(function () {
     "use strict";
 
-    function FieldSettingsOverlay($scope, localizationService, formService) {
+    function FieldSettingsOverlay($scope, localizationService, formService, userService, editorService, formHelper) {
 
         var vm = this;
 
         vm.showValidationPattern = false;
         vm.focusOnPatternField = false;
         vm.focusOnMandatoryField = false;
+        vm.canEditSensitiveData = false; //Default to false - until we check with the server for this user to see if they have rights to edit/set this property
+        vm.loading = true;  //We need to do a serverside call lookup at init/active to check is user has access to sensitive data
         vm.selectedValidationType = {};
         vm.actionTypes = [];
         vm.logicTypes = [];
         vm.operators = [];
-        vm.validationTypes = [{
-            "name": localizationService.localize("validation_validateAsEmail"),
-            "key": "email",
-            "pattern": "[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+",
-            "enableEditing": true
-        }, {
-            "name": localizationService.localize("validation_validateAsNumber"),
-            "key": "number",
-            "pattern": "^[0-9]*$",
-            "enableEditing": true
-        }, {
-            "name": localizationService.localize("validation_validateAsUrl"),
-            "key": "url",
-            "pattern": "https?\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}",
-            "enableEditing": true
-        }, {
-            "name": localizationService.localize("validation_enterCustomValidation"),
-            "key": "custom",
-            "pattern": "",
-            "enableEditing": true
-        }];
 
+        
+        localizationService.localizeMany(
+            [
+                "validation_validateAsEmail",
+                "validation_validateAsNumber",
+                "validation_validateAsUrl",
+                "validation_enterCustomValidation"]
+        ).then(function(labels){
 
+            vm.validationTypes = [{
+                "name": labels[0],
+                "key": "email",
+                "pattern": "[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+",
+                "enableEditing": true
+            }, {
+                "name": labels[1],
+                "key": "number",
+                "pattern": "^[0-9]*$",
+                "enableEditing": true
+            }, {
+                "name": labels[2],
+                "key": "url",
+                "pattern": "https?\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}",
+                "enableEditing": true
+            }, {
+                "name": labels[3],
+                "key": "custom",
+                "pattern": "",
+                "enableEditing": true
+            }];
+        });
 
         vm.changeValidationType = changeValidationType;
         vm.changeValidationPattern = changeValidationPattern;
-        vm.openFieldTypePickerOverlay = openFieldTypePickerOverlay;
+        vm.openFieldTypePicker = openFieldTypePicker;
         vm.deleteConditionRule = deleteConditionRule;
         vm.addConditionRule = addConditionRule;
         vm.getPrevalues = getPrevalues;
         vm.conditionFieldSelected = conditionFieldSelected;
+        vm.submitOnEnter = submitOnEnter;
+        vm.submit = submit;
+        vm.close = close;
+
 
         //Creating duplicate of the fields array on the model
         //As the select for the conditions needs to ensure it does not include itself
-       
+
         //Need to use angular.copy() otherwise when we remove item in fieldConditions its data-binding back down to the original model.fields
         vm.fieldConditions = angular.copy($scope.model.fields);
 
         //Trying not to use _underscore.js
         //Loop over array until we find the item where the ID matches & remove object from the array
-        for (var i =0; i < vm.fieldConditions.length; i++){
+        for (var i = 0; i < vm.fieldConditions.length; i++) {
             if (vm.fieldConditions[i].id === $scope.model.field.id) {
-                vm.fieldConditions.splice(i,1);
+                vm.fieldConditions.splice(i, 1);
                 break;
             }
         }
-            
+
 
 
         function activate() {
@@ -2378,7 +2207,18 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
             vm.logicTypes = formService.getLogicTypes();
             vm.operators = formService.getOperators();
 
-            if(!$scope.model.field.condition) {
+
+            //Verify that the current user is allowed to view & change the property 'containsSensitiveData'
+            userService.getCurrentUser().then(function (user) {
+
+                //Set the API controller response on the Angular ViewModel
+                vm.canEditSensitiveData = user.userGroups.indexOf("sensitiveData") !== -1;
+
+                //Got a response back from promise - so lets load up the UI
+                vm.loading = false;
+            });
+
+            if (!$scope.model.field.condition) {
                 $scope.model.field.condition = {};
                 $scope.model.field.condition.actionType = vm.actionTypes[0].value;
                 $scope.model.field.condition.logicType = vm.logicTypes[0].value;
@@ -2391,27 +2231,29 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
             matchValidationType();
         }
 
-        function openFieldTypePickerOverlay(field) {
+        function openFieldTypePicker(field) {
 
             vm.focusOnMandatoryField = false;
 
-            vm.fieldTypePickerOverlay = {
+            var fieldTypePicker = {
                 view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/fieldtypepicker/field-type-picker.html",
                 title: "Choose answer type",
                 hideSubmitButton: true,
-                show: true,
-                submit: function(model) {
+                size: "small",
+                submit: function (model) {
 
                     formService.loadFieldTypeSettings(field, model.fieldType);
 
                     // this should be removed in next major version
                     field.removePrevalueEditor = true;
 
-                    vm.fieldTypePickerOverlay.show = false;
-                    vm.fieldTypePickerOverlay = null;
+                    editorService.close();
+                },
+                close: function (model) {
+                    editorService.close();
                 }
             };
-
+            editorService.open(fieldTypePicker);
         }
 
         function matchValidationType() {
@@ -2421,7 +2263,7 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
                 var match = false;
 
                 // find and show if a match from the list has been chosen
-                angular.forEach(vm.validationTypes, function(validationType, index) {
+                angular.forEach(vm.validationTypes, function (validationType, index) {
                     if ($scope.model.field.regex === validationType.pattern) {
                         vm.selectedValidationType = validationType;
                         vm.showValidationPattern = true;
@@ -2431,7 +2273,7 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
 
                 // if there is no match - choose the custom validation option.
                 if (!match) {
-                    angular.forEach(vm.validationTypes, function(validationType) {
+                    angular.forEach(vm.validationTypes, function (validationType) {
                         if (validationType.key === "custom") {
                             vm.selectedValidationType = validationType;
                             vm.showValidationPattern = true;
@@ -2464,7 +2306,7 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
             formService.populateConditionRulePrevalues(selectedField, rule, $scope.model.fields);
         }
 
-        function deleteConditionRule (rules, rule) {
+        function deleteConditionRule(rules, rule) {
             formService.deleteConditionRule(rules, rule);
         }
 
@@ -2477,6 +2319,26 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
 
         function getPrevalues(field) {
             formService.loadFieldTypePrevalues(field);
+        }
+
+        function submitOnEnter(event) {
+            if (event && event.keyCode === 13) {
+                submit();
+            }
+        }
+
+        function submit() {
+            if ($scope.model.submit) {
+                if (formHelper.submitForm({ scope: $scope })) {
+                    $scope.model.submit($scope.model);
+                }
+            }
+        }
+
+        function close() {
+            if ($scope.model.close) {
+                $scope.model.close();
+            }
         }
 
         activate();
@@ -2501,6 +2363,7 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
         vm.filterItems = filterItems;
         vm.showDetailsOverlay = showDetailsOverlay;
         vm.hideDetailsOverlay = hideDetailsOverlay;
+        vm.close = close;
 
         function init() {
 
@@ -2535,6 +2398,12 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
 
         function hideDetailsOverlay() {
             $scope.model.itemDetails = null;
+        }
+
+        function close() {
+            if ($scope.model.close) {
+                $scope.model.close();
+            }
         }
 
         init();
@@ -2713,19 +2582,26 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
 (function () {
     "use strict";
 
-    function WorkflowSettingsOverlayController($scope, workflowResource) {
+    function WorkflowSettingsOverlayController($scope, workflowResource, editorService) {
 
         var vm = this;
 
         vm.workflowTypes = [];
         vm.focusWorkflowName = true;
 
-        if($scope.model.workflowType && $scope.model.workflowType.id) {
-            workflowResource.getScaffoldWorkflowType($scope.model.workflowType.id).then(function(response){
-               $scope.model.workflow = response.data;
+        if ($scope.model.workflowType && $scope.model.workflowType.id) {
+            workflowResource.getScaffoldWorkflowType($scope.model.workflowType.id).then(function (response) {
+                $scope.model.workflow = response.data;
             });
         }
 
+        vm.close = function () {
+            editorService.close();
+        };
+
+        vm.submit = function () {
+            $scope.model.submit($scope.model);
+        };
     }
 
     angular.module("umbraco").controller("UmbracoForms.Overlays.WorkflowSettingsOverlayController", WorkflowSettingsOverlayController);
@@ -2734,18 +2610,24 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
 (function () {
     "use strict";
 
-    function WorkflowsOverviewOverlayController($scope, workflowResource, notificationsService) {
+    function WorkflowsOverviewOverlayController($scope, workflowResource, notificationsService, editorService) {
 
         var vm = this;
-
         // massive hack to fix submit when pressing enter
         vm.focusOverlay = true;
-
+        
         vm.openWorkflowsTypesOverlay = openWorkflowsTypesOverlay;
         vm.editWorkflow = editWorkflow;
         vm.removeWorkflow = removeWorkflow;
         vm.editSubmitMessageWorkflow = editSubmitMessageWorkflow;
 
+        if(!$scope.model.formWorkflows.onSubmit){
+            $scope.model.formWorkflows.onSubmit = [];
+        }
+        if(!$scope.model.formWorkflows.onApprove){
+            $scope.model.formWorkflows.onApprove = [];
+        }
+        
         vm.workflowsSortableOptions = {
             distance: 10,
             tolerance: "pointer",
@@ -2757,10 +2639,10 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
             handle: ".sortable-handle",
             items: ".sortable",
             placeholder: "umb-forms-workflow__workflow-placeholder",
-            start: function(e, ui) {
+            start: function (e, ui) {
                 ui.placeholder.height(ui.item.height());
             },
-            stop: function(event, ui) {
+            stop: function (event, ui) {
                 updateSortOrder($scope.model.formWorkflows.onSubmit);
                 updateSortOrder($scope.model.formWorkflows.onApprove);
             }
@@ -2768,88 +2650,98 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
 
         function updateSortOrder(array) {
             var sortOrder = 0;
-            for(var i = 0; i < array.length; i++) {
+            for (var i = 0; i < array.length; i++) {
                 var arrayItem = array[i];
-                if(arrayItem.isDeleted === false) {
+                if (arrayItem.isDeleted === false) {
                     arrayItem.sortOrder = sortOrder;
                     sortOrder++;
                 }
             }
         }
 
-        function openWorkflowsTypesOverlay(workflowArray) {
-
+        function openWorkflowsTypesOverlay(workflowTypeArray) {
             // set overlay settings and open overlay
-            vm.workflowsTypesOverlay = {
+            var workflowsTypesOverlay = {
                 view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/workflows/workflow-types.html",
                 title: "Choose workflow",
                 fields: $scope.model.fields,
-                hideSubmitButton: true,
-                show: true,
-                submit: function(model) {
+                size: "small",
+                submit: function (model) {
 
                     // set sortOrder
-                    workflowArray.push(model.workflow);
-                    updateSortOrder(workflowArray);
+                    workflowTypeArray.push(model.workflow);
+                    updateSortOrder(workflowTypeArray);
 
-                    vm.workflowsTypesOverlay.show = false;
-                    vm.workflowsTypesOverlay = null;
+                    editorService.close();
+                },
+                close: function () {
+                    editorService.close();
                 }
             };
 
+            editorService.open(workflowsTypesOverlay);
         }
 
         function editWorkflow(workflow) {
-            vm.workflowSettingsOverlay = {
+            var workflowSettingsOverlay = {
                 view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/workflows/workflow-settings.html",
                 title: workflow.name,
                 workflow: workflow,
                 fields: $scope.model.fields,
-                show: true,
-                submit: function(model) {
+                size: "small",
+                submit: function (model) {
 
                     //Validate settings
-                    workflowResource.validateWorkflowSettings(model.workflow).then(function(response){
+                    workflowResource.validateWorkflowSettings(model.workflow).then(function (response) {
                         if (response.data.length > 0) {
                             angular.forEach(response.data, function (error) {
                                 notificationsService.error("Workflow failed to save", error.Message);
                             });
                         } else {
-                            vm.workflowSettingsOverlay.show = false;
-                            vm.workflowSettingsOverlay = null;
+                            editorService.close();
                         }
 
                     });
-
                 }
             };
+
+            editorService.open(workflowSettingsOverlay);
         }
 
         function editSubmitMessageWorkflow() {
 
-            vm.submitMessageWorkflowOverlay = {
+            var submitMessageWorkflowOverlay = {
                 view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/workflows/submit-message-workflow-settings.html",
                 title: "Message on submit",
                 messageOnSubmit: $scope.model.messageOnSubmit,
                 goToPageOnSubmit: $scope.model.goToPageOnSubmit,
-                show: true,
-                submit: function(model) {
+                size: "small",
+                submit: function (model) {
 
                     $scope.model.messageOnSubmit = model.messageOnSubmit;
                     $scope.model.goToPageOnSubmit = model.goToPageOnSubmit;
-
-                    vm.submitMessageWorkflowOverlay.show = false;
-                    vm.submitMessageWorkflowOverlay = null;
-
+                    editorService.close();
+                },
+                close: function () {
+                    editorService.close();
                 }
             };
 
+            editorService.open(submitMessageWorkflowOverlay);
         }
 
         function removeWorkflow(workflow, event, workflowTypeArray) {
             workflow.isDeleted = true;
             updateSortOrder(workflowTypeArray);
             event.stopPropagation();
+        }
+
+        vm.close = function () {
+            $scope.model.close();
+        }
+
+        vm.submit = function () {
+            $scope.model.submit($scope.model);
         }
 
     }
@@ -2860,7 +2752,7 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
 (function() {
     "use strict";
 
-    function WorkflowTypesOverlayController($scope, workflowResource, notificationsService) {
+    function WorkflowTypesOverlayController($scope, workflowResource, notificationsService, editorService) {
 
         var vm = this;
 
@@ -2896,15 +2788,14 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
         function pickWorkflowType(selectedWorkflowType) {
 
             // set overlay settings + open overlay
-            vm.workflowSettingsOverlay = {
+            var workflowSettingsOverlay = {
                 view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/workflows/workflow-settings.html",
                 title: selectedWorkflowType.name,
                 workflow: $scope.model.workflow,
                 workflowType: selectedWorkflowType,
                 fields: $scope.model.fields,
-                show: true,
+                size:"small",
                 submit: function(model) {
-
                     workflowResource.validateWorkflowSettings(model.workflow).then(function(response){
                         if (response.data.length > 0) {
                             angular.forEach(response.data, function (error) {
@@ -2918,15 +2809,15 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
                             // submit overlay and return the model
                             $scope.model.submit($scope.model);
 
-                            // close the overlay
-                            vm.workflowSettingsOverlay.show = false;
-                            vm.workflowSettingsOverlay = null;
-
+                            // close the infinite editor
+                            editorService.close();
                         }
 
                     });
                 }
             };
+
+            editorService.open(workflowSettingsOverlay);
         }
 
         function filterItems() {
@@ -2947,6 +2838,10 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Form.Dialogs.Workflow
 
         function hideDetailsOverlay() {
             $scope.model.itemDetails = null;
+        }
+
+        vm.close = function() {
+	        $scope.model.close();
         }
 
         init();
@@ -3030,76 +2925,76 @@ angular.module("umbraco").controller("UmbracoForms.Editors.Security.EditControll
 
 });
 
-angular.module("umbraco")
-    .controller("Umbraco.Forms.GridEditors.FormPickerController",
-    function ($scope, $rootScope, $timeout, dialogService, macroResource, macroService, $routeParams) {
-
-        $scope.title = "Click to insert form";
-        $scope.macroAlias = "renderUmbracoForm";
-        $scope.state = "init";
-
-        $scope.setForm = function () {
-
-            var dialogData = {
-                richTextEditor: true,
-                macroData: $scope.control.value || {
-                    macroAlias: $scope.macroAlias
-                }
-            };
-
-            $scope.formPickerOverlay = {};
-            $scope.formPickerOverlay.view = "macropicker";
-            $scope.formPickerOverlay.dialogData = dialogData;
-            $scope.formPickerOverlay.show = true;
-            $scope.formPickerOverlay.title = "Select form";
-
-            $scope.formPickerOverlay.submit = function (model) {
-
-                var macroObject = macroService.collectValueData(model.selectedMacro, model.macroParams, dialogData.renderingEngine);
-
-                $scope.control.value = {
-                    macroAlias: macroObject.macroAlias,
-                    macroParamsDictionary: macroObject.macroParamsDictionary
-                };
-
-                $scope.setPreview($scope.control.value);
-
-                $scope.formPickerOverlay.show = false;
-                $scope.formPickerOverlay = null;
-            };
-
-            $scope.formPickerOverlay.close = function (oldModel) {
-                $scope.formPickerOverlay.show = false;
-                $scope.formPickerOverlay = null;
-            };
-        };
-
-        $scope.setPreview = function (macro) {
-            var contentId = $routeParams.id;
-
-            $scope.title = macro.macroAlias;
-            $scope.state = "loading";
-
-            macroResource.getMacroResultAsHtmlForEditor(macro.macroAlias, contentId, macro.macroParamsDictionary)
-            .then(function (htmlResult) {
-                
-                if (htmlResult.trim().length > 0 && htmlResult.indexOf("Macro:") < 0) {
-                    $scope.preview = htmlResult;
-                    $scope.state = "loaded";
-                } else {
-                    $scope.state = "init";
-                }
-            });
-        };
-
-        $timeout(function () {
-            if ($scope.control.$initializing) {
-                $scope.setForm();
-            } else if ($scope.control.value) {
-                $scope.setPreview($scope.control.value);
-            }
-        }, 200);
-    });
+// angular.module("umbraco")
+//     .controller("Umbraco.Forms.GridEditors.FormPickerController",
+//     function ($scope, $rootScope, $timeout, dialogService, macroResource, macroService, $routeParams) {
+//
+//         $scope.title = "Click to insert form";
+//         $scope.macroAlias = "renderUmbracoForm";
+//         $scope.state = "init";
+//
+//         $scope.setForm = function () {
+//
+//             var dialogData = {
+//                 richTextEditor: true,
+//                 macroData: $scope.control.value || {
+//                     macroAlias: $scope.macroAlias
+//                 }
+//             };
+//
+//             $scope.formPickerOverlay = {};
+//             $scope.formPickerOverlay.view = "macropicker";
+//             $scope.formPickerOverlay.dialogData = dialogData;
+//             $scope.formPickerOverlay.show = true;
+//             $scope.formPickerOverlay.title = "Select form";
+//
+//             $scope.formPickerOverlay.submit = function (model) {
+//
+//                 var macroObject = macroService.collectValueData(model.selectedMacro, model.macroParams, dialogData.renderingEngine);
+//
+//                 $scope.control.value = {
+//                     macroAlias: macroObject.macroAlias,
+//                     macroParamsDictionary: macroObject.macroParamsDictionary
+//                 };
+//
+//                 $scope.setPreview($scope.control.value);
+//
+//                 $scope.formPickerOverlay.show = false;
+//                 $scope.formPickerOverlay = null;
+//             };
+//
+//             $scope.formPickerOverlay.close = function (oldModel) {
+//                 $scope.formPickerOverlay.show = false;
+//                 $scope.formPickerOverlay = null;
+//             };
+//         };
+//
+//         $scope.setPreview = function (macro) {
+//             var contentId = $routeParams.id;
+//
+//             $scope.title = macro.macroAlias;
+//             $scope.state = "loading";
+//
+//             macroResource.getMacroResultAsHtmlForEditor(macro.macroAlias, contentId, macro.macroParamsDictionary)
+//             .then(function (htmlResult) {
+//                
+//                 if (htmlResult.trim().length > 0 && htmlResult.indexOf("Macro:") < 0) {
+//                     $scope.preview = htmlResult;
+//                     $scope.state = "loaded";
+//                 } else {
+//                     $scope.state = "init";
+//                 }
+//             });
+//         };
+//
+//         $timeout(function () {
+//             if ($scope.control.$initializing) {
+//                 $scope.setForm();
+//             } else if ($scope.control.value) {
+//                 $scope.setPreview($scope.control.value);
+//             }
+//         }, 200);
+//     });
 
 angular.module("umbraco")
 .controller("UmbracoForms.Editors.PreValueSource.DeleteController",
@@ -3200,12 +3095,16 @@ angular.module("umbraco").controller("UmbracoForms.Editors.PreValueSource.EditCo
         
         //set settings
         $scope.preValueSource.settings = {};
-        angular.forEach($scope.preValueSource.$type.settings, function (setting) {
-            var key = setting.alias;
-            var value = setting.value;
-            $scope.preValueSource.settings[key] = value;
-           
-        });
+        if($scope.preValueSource.$type){
+            angular.forEach($scope.preValueSource.$type.settings, function (setting) {
+                var key = setting.alias;
+                var value = setting.value;
+                $scope.preValueSource.settings[key] = value;
+
+            });
+        }
+       
+      
 
         //validate settings
         preValueSourceResource.validateSettings($scope.preValueSource)
@@ -3842,6 +3741,7 @@ function securityResource($http) {
         getByUserId: function (userId) {
             return $http.get(apiRoot + "GetByUserId?userId=" + userId);
         },
+
         save: function (userSecurity) {
             return $http.post(apiRoot + "PostSave", userSecurity);
         }
@@ -4011,7 +3911,7 @@ angular.module("umbraco.directives")
 });
 
 angular.module("umbraco.directives")
-    .directive('umbFormsContentPicker', function (dialogService, entityResource, iconHelper) {
+    .directive('umbFormsContentPicker', function (entityResource, iconHelper, editorService) {
     return {
         restrict: 'E',
         replace: true,
@@ -4032,15 +3932,17 @@ angular.module("umbraco.directives")
             };
 
             scope.openContentPicker = function () {
-                scope.contentPickerOverlay = {
-                    view: "contentpicker",
-                    show: true,
+                var contentPickerOverlay = {
                     submit: function(model) {
                         populate(model.selection[0]);
-                        scope.contentPickerOverlay.show = false;
-                        scope.contentPickerOverlay = null;
+                        editorService.close();
+                    },
+                    close: function(){
+                        editorService.close();
                     }
                 };
+
+                editorService.contentPicker(contentPickerOverlay);
             };
 
             scope.clear = function () {
@@ -4149,318 +4051,7 @@ angular.module("umbraco.directives")
     });
 
 angular.module("umbraco.directives")
-    .directive('umbFormsDesigner', function (dialogService, formService) {
-        return {
-            scope: {
-                form: "=",
-                fieldtypes: "=",
-                prevaluesources: "="
-            },
-
-            transclude: true,
-
-            restrict: 'E',
-            replace: true,
-
-            templateUrl: '/App_Plugins/UmbracoForms/directives/umb-forms-designer.html',
-            link: function (scope, element, attrs, ctrl) {
-
-
-                // *********************************************
-                // Form management functions
-                // *********************************************
-                scope.initForm = function(form, fieldtypes){
-                    formService.initForm(form, fieldtypes);
-                    scope.gotoPageIndex(0);
-                };
-
-
-                // *********************************************
-                // Page management functions
-                // *********************************************
-
-                scope.gotoPageIndex = function(index){
-                    scope.form.$currentPage = scope.form.pages[index];
-                    scope.currentPageIndex = index;
-
-                    scope.onFirstPage = scope.currentPageIndex === 0;
-                    scope.onLastPage = scope.currentPageIndex === scope.form.pages.length-1;
-                };
-
-                scope.addPage = function (form) {
-                    scope.closeItemOverlay();
-                    formService.addPage(form);
-                    scope.gotoPageIndex(form.pages.length -1);
-
-                };
-
-                scope.deletePage = function (page) {
-                    var index = scope.form.pages.indexOf(page);
-                    scope.form.pages.splice(index, 1);
-                    if (index > 0) {
-                        scope.currentPageIndex = index - 1;
-                        scope.form.$currentPage = scope.form.pages[index - 1];
-                    } else {
-                        scope.currentPageIndex = 0;
-                        scope.form.$currentPage = scope.form.pages[0];
-                    }
-
-                    scope.onFirstPage = scope.currentPageIndex === 0;
-                    scope.onLastPage = scope.currentPageIndex === scope.form.pages.length - 1;
-
-                    populateFields();
-                };
-
-                // *********************************************
-                // Fieldset management functions
-                // *********************************************
-
-                scope.setCurrentFieldset = function (fieldset) {
-                    scope.currentFieldset = fieldset;
-                };
-
-                scope.addFieldset = function(page, fieldset, container, index){
-                    scope.closeItemOverlay();
-                    var _index = page.fieldSets.indexOf(fieldset);
-                    formService.addFieldset(page, _index+1);
-                };
-
-                scope.deleteFieldset = function(page,fieldset) {
-                    formService.deleteFieldset(page, fieldset);
-                };
-
-                scope.editFieldset = function (fieldset) {
-                    populateFields();
-                    dialogService.open(
-                    {
-                        template: "/app_plugins/UmbracoForms/Backoffice/Form/dialogs/fieldsetsettings.html",
-                        fieldset: fieldset,
-                        fields: scope.fields
-                    });
-                };
-
-                // *********************************************
-                // Container management functions
-                // *********************************************
-                scope.addContainer = function (fieldset, container, index) {
-                    scope.closeItemOverlay();
-                    var _index = fieldset.containers.indexOf(container);
-                    formService.splitContainer(fieldset, container, _index+1);
-                };
-
-                // *********************************************
-                // Field management functions
-                // *********************************************
-                scope.initField = function(field){
-                    if(field && !field.$fieldType){
-                        formService.setFieldType(field,field.fieldTypeId);
-                    }
-                };
-
-                scope.addField = function (container, fieldtype, index) {
-                    scope.closeItemOverlay();
-                    formService.addField(container, fieldtype, index+1);
-                };
-
-                scope.editField = function(field){
-                    populateFields();
-
-                    scope.setFieldType(field);
-
-                    dialogService.open(
-                            {
-                                template: "/app_plugins/UmbracoForms/Backoffice/Form/dialogs/fieldsettings.html",
-                                field: field,
-                                fields: scope.fields,
-                                setFieldType: formService.setFieldType,
-                                fieldtypes: scope.fieldtypes,
-                                prevaluesources: scope.prevaluesources
-                            });
-                };
-
-                scope.deleteField = function(fieldset,container,field) {
-                    formService.deleteField(fieldset,container,field);
-                };
-
-                scope.copyField = function (container, field) {
-                    var copy ={};
-                    angular.copy(field, copy);
-                    copy.id = generateGUID();
-                    copy.caption = "copy of " + copy.caption;
-                    container.fields.splice(container.fields.indexOf(field) + 1, 0, copy);
-                    populateFields();
-                };
-
-                scope.setFieldType = function (field) {
-
-                    //set settings
-                    angular.forEach(field.settings, function (setting) {
-                        for (var key in field.settings) {
-                            if (field.settings.hasOwnProperty(key)) {
-                                if (_.where(field.$fieldType.settings, { alias: key }).length > 0) {
-                                    _.where(field.$fieldType.settings, { alias: key })[0].value = field.settings[key];
-                                }
-                            }
-                        }
-                    });
-
-                };
-
-
-                // *********************************************
-                // Button/hover state handlers
-                // *********************************************
-                scope.setCurrentControl = function (field) {
-                    scope.currentControl = field;
-                };
-
-                scope.setCurrentToolsControl = function (field) {
-                    scope.currentToolsControl = field;
-                };
-
-                scope.setCurrentRemoveControl = function (Control) {
-                    scope.currentRemoveControl = Control;
-                };
-
-                scope.setCurrentMoveControl = function (Control) {
-                    scope.currentMoveControl = Control;
-                };
-
-                scope.setCurrentContainer = function (container) {
-                    scope.currentContainer = container;
-                };
-
-
-
-
-
-                // *********************************************
-                // Field conditions
-                // *********************************************
-                scope.addConditionRule = function (condition) {
-                    if (!condition.rules){
-                        condition.rules = [];
-                    }
-
-                    condition.rules.push({
-                        field: condition.$newrule.field,
-                        operator: condition.$newrule.operator,
-                        value: condition.$newrule.value
-                    });
-
-                    condition.$newrule.field = null;
-                    condition.$newrule.operator = null;
-                    condition.$newrule.value = null;
-                };
-
-                scope.deleteFieldConditionRule = function (rules, rule) {
-                    var index = rules.indexOf(rule);
-                    rules.splice(index, 1);
-                };
-
-
-                // *********************************************
-                // Sorting configurations
-                // *********************************************
-                scope.fieldSetSortableOptions = {
-                        distance: 10,
-                        cursor: "move",
-                        placeholder: 'ui-sortable-placeholder',
-                        handle: '.cell-tools-move',
-                        connectWith: ".umb-forms-fieldsets"
-                };
-
-                scope.fieldSortableOptions = {
-                    distance: 10,
-                    cursor: "move",
-                    placeholder: 'ui-sortable-placeholder',
-                    handle: '.cell-tools-move',
-                    connectWith: ".umb-forms-fields-container"
-                };
-
-                // *********************************************
-                // Add items overlay menu
-                // *********************************************
-                scope.overlayMenu = {
-                    show: false,
-                    style: {},
-                    container: undefined,
-                    fieldset: undefined
-                };
-
-                scope.addItemOverlay = function(sender, field, fieldset, container, index){
-                    scope.overlayMenu.container = container;
-                    scope.overlayMenu.fieldset = fieldset;
-                    scope.overlayMenu.index = index;
-                    scope.overlayMenu.style = {};
-                    scope.overlayMenu.field = field;
-
-                    //todo calculate position...
-                    var offset = $(sender.target).offset();
-                    var height = $(window).height();
-                    var width = $(window).width();
-
-                    if((height-offset.top) < 250){
-                        scope.overlayMenu.style.bottom = 0;
-                        scope.overlayMenu.style.top = "initial";
-                    }else if(offset.top < 300){
-                        scope.overlayMenu.style.top = 190;
-                    }
-
-                    scope.overlayMenu.show = true;
-                };
-
-                scope.closeItemOverlay = function(){
-                    scope.overlayMenu.show = false;
-                    scope.overlayMenu.field = undefined;
-                };
-
-
-                scope.adjustSize = function(ev){
-                    if(ev.target.scrollHeight > ev.target.clientHeight){
-                        $(ev.target).height(ev.target.scrollHeight);
-                    }
-                };
-
-
-                // *********************************************
-                // Button functons
-                // *********************************************
-
-                scope.editForm = function (form, section) {
-                    dialogService.closeAll();
-                    dialogService.open(
-                        {
-                            template: "/app_plugins/UmbracoForms/Backoffice/Form/dialogs/formsettings.html",
-                            form: form,
-                            section: section,
-                            page: scope.currentPage
-                        });
-                };
-
-                // *********************************************
-                // Internal functons
-                // *********************************************
-                var populateFields = function() {
-                    scope.fields = [];
-                    angular.forEach(scope.form.pages, function(page) {
-                        angular.forEach(page.fieldSets, function(fieldset) {
-                            angular.forEach(fieldset.containers, function(container) {
-                                angular.forEach(container.fields, function (field) {
-                                    scope.fields.push(field);
-                                });
-                            });
-                        });
-                    });
-                };
-
-                scope.initForm(scope.form, scope.fieldtypes);
-            }
-        };
-    });
-
-angular.module("umbraco.directives")
-    .directive('umbFormsDesignerNew', function (dialogService, formService, workflowResource, notificationsService) {
+    .directive('umbFormsDesignerNew', function (formService, workflowResource, notificationsService, editorService) {
         return {
             scope: {
                 form: "=",
@@ -4477,11 +4068,28 @@ angular.module("umbraco.directives")
 
                 scope.sortingMode = false;
                 scope.sortingButtonKey = "general_reorder";
+                scope.state = "";
 
 
                 // *********************************************
                 // Sorting management functions
                 // *********************************************
+
+
+                scope.setActive = function (fieldSet) {
+
+                    angular.forEach(scope.form.pages, function (page) {
+                        angular.forEach(page.fieldSets, function (fieldset) {
+
+                            if (fieldset.state === "active") {
+                                fieldset.state = "InActive";
+                            }
+
+                        });
+                    });
+
+                    fieldSet.state = "active";
+                };
 
                 scope.sortablePages = {
                     distance: 10,
@@ -4493,7 +4101,7 @@ angular.module("umbraco.directives")
                     zIndex: 6000,
                     handle: ".sortable-handle",
                     items: ".sortable",
-                    start: function(e, ui) {
+                    start: function (e, ui) {
                         ui.placeholder.height(ui.item.height());
                     }
                 };
@@ -4509,15 +4117,15 @@ angular.module("umbraco.directives")
                     zIndex: 6000,
                     handle: ".sortable-handle",
                     items: ".sortable",
-                    start: function(e, ui) {
+                    start: function (e, ui) {
                         ui.placeholder.height(ui.item.height());
                     },
-                    over: function(e, ui) {
+                    over: function (e, ui) {
                         scope.$apply(function () {
                             $(e.target).scope().page.dropOnEmpty = true;
                         });
                     },
-                    out: function(e, ui) {
+                    out: function (e, ui) {
                         scope.$apply(function () {
                             $(e.target).scope().page.dropOnEmpty = false;
                         });
@@ -4535,25 +4143,25 @@ angular.module("umbraco.directives")
                     zIndex: 6000,
                     handle: ".sortable-handle",
                     items: ".sortable",
-                    start: function(e, ui) {
+                    start: function (e, ui) {
                         ui.placeholder.height(ui.item.height());
                     },
-                    over: function(e, ui) {
+                    over: function (e, ui) {
                         scope.$apply(function () {
                             $(e.target).scope().container.dropOnEmpty = true;
                         });
                     },
-                    out: function(e, ui) {
+                    out: function (e, ui) {
                         scope.$apply(function () {
                             $(e.target).scope().container.dropOnEmpty = false;
                         });
                     }
                 };
 
-                scope.toggleSortingMode = function() {
+                scope.toggleSortingMode = function () {
                     scope.sortingMode = !scope.sortingMode;
 
-                    if(scope.sortingMode) {
+                    if (scope.sortingMode) {
                         scope.sortingButtonKey = "general_reorderDone";
                     } else {
                         scope.sortingButtonKey = "general_reorder";
@@ -4564,21 +4172,21 @@ angular.module("umbraco.directives")
                 // *********************************************
                 // Form management functions
                 // *********************************************
-                scope.initForm = function(form, fieldtypes){
+                scope.initForm = function (form, fieldtypes) {
                     formService.initForm(form, fieldtypes);
                 };
 
 
                 // *********************************************
-                // Delete promt
+                // Delete prompt
                 // *********************************************
-                 scope.togglePrompt = function(object) {
-                     object.deletePrompt = !object.deletePrompt;
-                 };
+                scope.togglePrompt = function (object) {
+                    object.deletePrompt = !object.deletePrompt;
+                };
 
-                 scope.hidePrompt = function(object) {
-                     object.deletePrompt = false;
-                 };
+                scope.hidePrompt = function (object) {
+                    object.deletePrompt = false;
+                };
 
                 // *********************************************
                 // Page management functions
@@ -4588,17 +4196,17 @@ angular.module("umbraco.directives")
                     formService.addPage(form);
                 };
 
-                scope.removePage = function(pages, index) {
+                scope.removePage = function (pages, index) {
                     pages.splice(index, 1);
                 };
 
-                scope.formHasFields = function(form) {
+                scope.formHasFields = function (form) {
                     var hasFields = false;
 
-                    angular.forEach(scope.form.pages, function(page) {
-                        angular.forEach(page.fieldSets, function(fieldset) {
-                            angular.forEach(fieldset.containers, function(container) {
-                                if(container.fields.length > 0) {
+                    angular.forEach(scope.form.pages, function (page) {
+                        angular.forEach(page.fieldSets, function (fieldset) {
+                            angular.forEach(fieldset.containers, function (container) {
+                                if (container.fields.length > 0) {
                                     hasFields = true;
                                 }
                             });
@@ -4608,13 +4216,13 @@ angular.module("umbraco.directives")
                     return hasFields;
                 };
 
-                scope.pageHasFields = function(page) {
+                scope.pageHasFields = function (page) {
 
                     var hasFields = false;
 
-                    angular.forEach(page.fieldSets, function(fieldset) {
-                        angular.forEach(fieldset.containers, function(container) {
-                            if(container.fields.length > 0) {
+                    angular.forEach(page.fieldSets, function (fieldset) {
+                        angular.forEach(fieldset.containers, function (container) {
+                            if (container.fields.length > 0) {
                                 hasFields = true;
                             }
                         });
@@ -4629,38 +4237,28 @@ angular.module("umbraco.directives")
                 // *********************************************
 
 
-                scope.addFieldset = function(page){
+                scope.addFieldset = function (page) {
                     // always add it last
                     var _index = page.fieldSets.length;
                     formService.addFieldset(page, _index);
                 };
 
-                scope.removeFieldset = function(page, fieldset) {
+                scope.removeFieldset = function (page, fieldset) {
                     formService.deleteFieldset(page, fieldset);
                 };
 
                 scope.editFieldset = function (fieldset) {
                     populateFields();
 
-                    scope.fieldsetSettingsOverlay = {
+                    var fieldsetSettingsOverlay = {
                         view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/fieldsetsettings/fieldset-settings.html",
                         title: "Edit group",
                         fieldset: fieldset,
                         fields: scope.fields,
-                        closeButtonLabel: "Cancel",
-                        show: true,
-                        submit: function(model) {
-                            scope.fieldsetSettingsOverlay.show = false;
-                            scope.fieldsetSettingsOverlay = null;
-                        },
-                        close: function(oldModel) {
-                            fieldset.containers = oldModel.fieldset.containers;
-                            fieldset.condition = oldModel.fieldset.condition;
-
-                            scope.fieldsetSettingsOverlay.show = false;
-                            scope.fieldsetSettingsOverlay = null;
-                        }
+                        size: "small"
                     };
+
+                    editorService.open(fieldsetSettingsOverlay);
                 };
 
 
@@ -4668,21 +4266,20 @@ angular.module("umbraco.directives")
                 // Field management functions
                 // *********************************************
 
-                scope.addField = function(fieldset, container) {
+                scope.addField = function (fieldset, container) {
 
                     populateFields();
 
                     var emptyField = formService.addEmptyField(container);
 
-                    scope.fieldSettingsOverlay = {
+                    var fieldSettingsEditor = {
                         view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/fieldsettings/field-settings.html",
                         title: "Add question",
                         field: emptyField,
                         fields: scope.fields,
+                        size: "small",
                         prevalueSources: scope.prevaluesources,
-                        show: true,
-                        submit: function(model) {
-
+                        submit: function (model) {
                             emptyField.settings = {};
 
                             for (var i = 0; i < model.field.$fieldType.settings.length; i++) {
@@ -4691,33 +4288,30 @@ angular.module("umbraco.directives")
                                 var value = setting.value;
                                 emptyField.settings[key] = value;
                             }
-
-                            scope.fieldSettingsOverlay.show = false;
-                            scope.fieldSettingsOverlay = null;
+                            editorService.close();
                         },
-                        close: function(oldModel) {
+                        close: function () {
                             formService.deleteField(fieldset, container, emptyField);
-                            scope.fieldSettingsOverlay.show = false;
-                            scope.fieldSettingsOverlay = null;
+                            editorService.close();
                         }
                     };
-
+                    editorService.open(fieldSettingsEditor);
                 };
 
-                scope.openFieldSettings = function(field){
+                scope.openFieldSettings = function (field) {
 
                     populateFields();
 
                     scope.setFieldType(field);
 
-                    scope.fieldSettingsOverlay = {
+                    var fieldSettingsOverlay = {
                         view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/fieldsettings/field-settings.html",
                         title: "Edit question",
                         field: field,
                         fields: scope.fields,
+                        size: "small",
                         prevalueSources: scope.prevaluesources,
-                        show: true,
-                        submit: function(model) {
+                        submit: function (model) {
 
                             field.settings = {};
 
@@ -4727,15 +4321,18 @@ angular.module("umbraco.directives")
                                 var value = setting.value;
                                 field.settings[key] = value;
                             }
-
-                            scope.fieldSettingsOverlay.show = false;
-                            scope.fieldSettingsOverlay = null;
+                            editorService.close();
+                        },
+                        close: function () {
+                            editorService.close();
                         }
                     };
+
+                    editorService.open(fieldSettingsOverlay);
                 };
 
-                scope.removeField = function(fieldset,container,field) {
-                    formService.deleteField(fieldset,container,field);
+                scope.removeField = function (fieldset, container, field) {
+                    formService.deleteField(fieldset, container, field);
                 };
 
                 scope.setFieldType = function (field) {
@@ -4757,27 +4354,31 @@ angular.module("umbraco.directives")
                 // Field conditions
                 // *********************************************
 
-                scope.getFieldNameFromGuid = function(selectedFieldId) {
+                scope.getFieldNameFromGuid = function (selectedFieldId) {
                     populateFields();
-                    for(var i = 0; i < scope.fields.length; i++) {
+                    for (var i = 0; i < scope.fields.length; i++) {
                         var field = scope.fields[i];
-                        if(field.id === selectedFieldId) {
+                        if (field.id === selectedFieldId) {
                             return field.caption;
                         }
                     }
                 };
 
                 // *********************************************
-                // Button functons
+                // Button functions
                 // *********************************************
 
-                scope.editWorkflows = function() {
+                scope.editWorkflows = function () {
 
-                    if(scope.security && scope.security.userSecurity.manageWorkflows) {
+                    if (scope.security && scope.security.userSecurity.manageWorkflows) {
 
                         populateFields();
 
-                        scope.workflowsOverlay = {
+                        var oldFormWorkflows = angular.copy(scope.form.formWorkflows);
+                        var oldMessageOnSubmit = angular.copy(scope.form.goToPageOnSubmit);
+                        var oldGoToPageOnSubmit = angular.copy(scope.form.goToPageOnSubmit);
+
+                        var workflowOverlay = {
                             view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/workflows/workflows-overview.html",
                             title: "Workflows",
                             formWorkflows: scope.form.formWorkflows,
@@ -4786,90 +4387,92 @@ angular.module("umbraco.directives")
                             submitLabel: scope.form.submitLabel,
                             manualApproval: scope.form.manualApproval,
                             fields: scope.fields,
-                            closeButtonLabel: "Cancel",
-                            show: true,
-                            submit: function(model) {
+                            size: "small",
+                            submit: function (model) {
                                 scope.form.formWorkflows = model.formWorkflows;
                                 scope.form.messageOnSubmit = model.messageOnSubmit;
                                 scope.form.goToPageOnSubmit = model.goToPageOnSubmit;
 
-                                scope.workflowsOverlay.show = false;
-                                scope.workflowsOverlay = null;
+                                editorService.close();
                             },
-                            close: function(oldModel) {
+                            close: function () {
                                 // reset the model
-                                scope.form.formWorkflows = oldModel.formWorkflows;
-                                scope.form.messageOnSubmit = oldModel.messageOnSubmit;
-                                scope.form.goToPageOnSubmit = oldModel.goToPageOnSubmit;
+                                scope.form.formWorkflows = oldFormWorkflows;
+                                scope.form.messageOnSubmit = oldMessageOnSubmit;
+                                scope.form.goToPageOnSubmit = oldGoToPageOnSubmit;
 
-                                scope.workflowsOverlay.show = false;
-                                scope.workflowsOverlay = null;
+                                editorService.close();
                             }
                         };
 
+                        editorService.open(workflowOverlay);
                     }
                 };
 
-                scope.editWorkflowSettings = function(workflow) {
+                scope.editWorkflowSettings = function (workflow) {
+             
+                    if (scope.security && scope.security.userSecurity.manageWorkflows) {
 
-                    if(scope.security && scope.security.userSecurity.manageWorkflows) {
-
+                        
                         populateFields();
 
-                        scope.workflowSettingsOverlay = {
+                        var workflowSettingsOverlay = {
                             view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/workflows/workflow-settings.html",
                             workflow: workflow,
                             fields: scope.fields,
                             title: workflow.name,
-                            show: true,
-                            submit: function(model) {
+                            size: "small",
+                            submit: function (model) {
 
                                 //Validate settings
-                                workflowResource.validateWorkflowSettings(model.workflow).then(function(response){
+                                workflowResource.validateWorkflowSettings(model.workflow).then(function (response) {
                                     if (response.data.length > 0) {
                                         angular.forEach(response.data, function (error) {
                                             notificationsService.error("Workflow failed to save", error.Message);
                                         });
                                     } else {
-                                        scope.workflowSettingsOverlay.show = false;
-                                        scope.workflowSettingsOverlay = null;
+                                        editorService.close();
                                     }
 
                                 });
                             }
                         };
 
+                        editorService.open(workflowSettingsOverlay);
                     }
-
                 };
 
-                scope.editSubmitMessageWorkflow = function() {
-
-                    scope.submitMessageWorkflowOverlay = {
+                scope.editSubmitMessageWorkflow = function () {
+                    
+                    var submitMessageWorkflowOverlay = {
                         view: "/app_plugins/UmbracoForms/Backoffice/Form/overlays/workflows/submit-message-workflow-settings.html",
                         title: "Message on submit",
                         messageOnSubmit: scope.form.messageOnSubmit,
                         goToPageOnSubmit: scope.form.goToPageOnSubmit,
-                        show: true,
-                        submit: function(model) {
+                        size:"small",
+                        submit: function (model) {
                             scope.form.messageOnSubmit = model.messageOnSubmit;
                             scope.form.goToPageOnSubmit = model.goToPageOnSubmit;
 
-                            scope.submitMessageWorkflowOverlay.show = false;
-                            scope.submitMessageWorkflowOverlay = null;
-                        }
+                            editorService.close();
+                        },
+                        close: function(){
+                            editorService.close();
+                        }                           
+                        
                     };
 
+                    editorService.open(submitMessageWorkflowOverlay);
                 };
 
                 // *********************************************
-                // Internal functons
+                // Internal functions
                 // *********************************************
-                var populateFields = function() {
+                var populateFields = function () {
                     scope.fields = [];
-                    angular.forEach(scope.form.pages, function(page) {
-                        angular.forEach(page.fieldSets, function(fieldset) {
-                            angular.forEach(fieldset.containers, function(container) {
+                    angular.forEach(scope.form.pages, function (page) {
+                        angular.forEach(page.fieldSets, function (fieldset) {
+                            angular.forEach(fieldset.containers, function (container) {
                                 angular.forEach(container.fields, function (field) {
                                     scope.fields.push(field);
                                 });
@@ -4900,7 +4503,8 @@ angular.module("umbraco.directives")
             replace: true,
             templateUrl: '/App_Plugins/UmbracoForms/directives/umb-forms-entry-detail.html',
             scope: {
-                entry: '='
+                entry: '=',
+                sensitiveDataAccess: '='
             },
             link: link
         };
@@ -4952,89 +4556,89 @@ angular.module("umbraco.directives")
             }
         };
     });
-angular.module("umbraco.directives")
-    .directive('umbFormsLegacyContentPicker', function (dialogService, entityResource, iconHelper) {
-    return {
-        restrict: 'E',
-        replace: true,
-        templateUrl: '/App_Plugins/UmbracoForms/directives/umb-forms-legacy-content-picker.html',
-        require: "ngModel",
-        link: function (scope, element, attr, ctrl) {
+// angular.module("umbraco.directives")
+//     .directive('umbFormsLegacyContentPicker', function (dialogService, entityResource, iconHelper) {
+//     return {
+//         restrict: 'E',
+//         replace: true,
+//         templateUrl: '/App_Plugins/UmbracoForms/directives/umb-forms-legacy-content-picker.html',
+//         require: "ngModel",
+//         link: function (scope, element, attr, ctrl) {
+//
+//             ctrl.$render = function() {
+//                 var val = parseInt(ctrl.$viewValue);
+//
+//                 if (!isNaN(val) && angular.isNumber(val) && val > 0) {
+//
+//                     entityResource.getById(val, "Document").then(function(item) {
+//                         item.icon = iconHelper.convertFromLegacyIcon(item.icon);
+//                         scope.node = item;
+//                     });
+//                 }
+//             };
+//
+//             scope.openContentPicker = function () {
+//                 var d = dialogService.treePicker({
+//                     section: "content",
+//                     treeAlias: "content",
+//                     multiPicker: false,
+//                     callback: populate
+//                 });
+//             };
+//
+//             scope.clear = function () {
+//                 scope.id = undefined;
+//                 scope.node = undefined;
+//                 updateModel(0);
+//             };
+//
+//             function populate(item) {
+//                 scope.clear();
+//                 item.icon = iconHelper.convertFromLegacyIcon(item.icon);
+//                 scope.node = item;
+//                 scope.id = item.id;
+//                 updateModel(item.id);
+//             }
+//
+//             function updateModel(id) {
+//                 ctrl.$setViewValue(id);
+//                
+//             }
+//         }
+//     };
+// });
 
-            ctrl.$render = function() {
-                var val = parseInt(ctrl.$viewValue);
-
-                if (!isNaN(val) && angular.isNumber(val) && val > 0) {
-
-                    entityResource.getById(val, "Document").then(function(item) {
-                        item.icon = iconHelper.convertFromLegacyIcon(item.icon);
-                        scope.node = item;
-                    });
-                }
-            };
-
-            scope.openContentPicker = function () {
-                var d = dialogService.treePicker({
-                    section: "content",
-                    treeAlias: "content",
-                    multiPicker: false,
-                    callback: populate
-                });
-            };
-
-            scope.clear = function () {
-                scope.id = undefined;
-                scope.node = undefined;
-                updateModel(0);
-            };
-
-            function populate(item) {
-                scope.clear();
-                item.icon = iconHelper.convertFromLegacyIcon(item.icon);
-                scope.node = item;
-                scope.id = item.id;
-                updateModel(item.id);
-            }
-
-            function updateModel(id) {
-                ctrl.$setViewValue(id);
-                
-            }
-        }
-    };
-});
-
-angular.module("umbraco.directives")
-    .directive('umbFormsOverlay', function () {
-        return {
-            restrict: 'A',
-            link: function (scope, el, attrs, ctrl) {
-                var margin = 50,
-                winHeight = $(window).height(),
-                
-                calculate = _.throttle(function(){
-                    if(el){
-                        //detect bottom fold
-                        var bottom_dif = (el.offset().top + el.height() + margin) - winHeight;
-                        if(bottom_dif > 0){
-
-                            $(el).css('margin-top', function (index, curValue) {
-                                return parseInt(curValue, 10) - bottom_dif + 'px';
-                            });
-                        }else{
-                            //else detect top fold           
-                        }
-                    }
-                }, 1000);
-
-                //On resize, make sure to check the overlay
-                $(window).bind("resize", function () {
-                   winHeight = $(window).height();
-                   calculate();
-                });
-            }
-        };
-    });
+// angular.module("umbraco.directives")
+//     .directive('umbFormsOverlay', function () {
+//         return {
+//             restrict: 'A',
+//             link: function (scope, el, attrs, ctrl) {
+//                 var margin = 50,
+//                 winHeight = $(window).height(),
+//                
+//                 calculate = _.throttle(function(){
+//                     if(el){
+//                         //detect bottom fold
+//                         var bottom_dif = (el.offset().top + el.height() + margin) - winHeight;
+//                         if(bottom_dif > 0){
+//
+//                             $(el).css('margin-top', function (index, curValue) {
+//                                 return parseInt(curValue, 10) - bottom_dif + 'px';
+//                             });
+//                         }else{
+//                             //else detect top fold           
+//                         }
+//                     }
+//                 }, 1000);
+//
+//                 //On resize, make sure to check the overlay
+//                 $(window).bind("resize", function () {
+//                    winHeight = $(window).height();
+//                    calculate();
+//                 });
+//             }
+//         };
+//     });
 angular.module("umbraco.directives")
     .directive('umbFormsPrevalueEditor', function (notificationsService) {
         return {
@@ -5093,8 +4697,10 @@ angular.module("umbraco.directives")
             replace: true,
             templateUrl: '/App_Plugins/UmbracoForms/directives/umb-forms-render-type.html',
             scope: {
-                view: "=",
-                field: '='
+                view: '=',
+                field: '=',
+                sensitive: '=',
+                hasAccess: '='
             }
         };
 

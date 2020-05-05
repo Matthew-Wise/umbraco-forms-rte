@@ -15,6 +15,13 @@
                     valid = true;
                 }
             });
+
+            if(!valid){
+                $("input", $(element).closest(".checkboxlist, .radiobuttonlist")).each(function (i) {
+
+                    $(this).addClass("input-validation-error");
+                });
+            }
             return valid;
         });
 

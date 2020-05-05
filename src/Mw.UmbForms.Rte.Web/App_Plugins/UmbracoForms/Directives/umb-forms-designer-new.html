@@ -27,7 +27,7 @@
                    ng-model="page.caption"
                    placeholder="Untitled page (optional)">
 
-                <div class="umb-forms__actions -page" ng-if="form.pages.length > 1">
+                <div class="umb-forms__page-actions -page" ng-if="form.pages.length > 1">
                     <a href="">
                         <i class="icon-trash" ng-click="togglePrompt(page)"></i>
                         <umb-confirm-action
@@ -42,7 +42,7 @@
 
             <div class="umb-forms__fieldsets" ng-class="{'-empty': page.fieldSets.length === 0}" ui-sortable="sortableFieldsets" ng-model="page.fieldSets">
 
-                <div class="umb-forms__fieldset sortable" ng-repeat="fieldset in page.fieldSets">
+                <div class="umb-forms__fieldset sortable" ng-repeat="fieldset in page.fieldSets" ng-class="{'-active':fieldset.state =='active'}" ng-click="setActive(fieldset)">
 
                     <div class="umb-forms__fieldset-header">
 
@@ -64,7 +64,7 @@
                             </span>
                         </div>
 
-                        <div class="umb-forms__actions -fieldset" ng-if="!sortingMode">
+                        <div class="umb-forms__page-actions -fieldset" ng-if="!sortingMode">
                             <a href="" ng-click="editFieldset(fieldset)"><i class="icon-settings"></i></a>
                             <a href="">
                                 <i class="icon-trash" ng-click="togglePrompt(fieldset)"></i>
@@ -125,6 +125,11 @@
                                         </div>
 
                                         <div class="umb-forms__field-wrapper">
+                                            
+                                            <div class="umb-group-builder__property-tag -white" ng-if="field.containsSensitiveData">
+                                                <i class="icon-lock umb-group-builder__property-tag-icon"></i>
+                                                <localize key="contentTypeEditor_isSensitiveData">Is sensitive data</localize>
+                                            </div>
 
                                             <div class="umb-forms__field-condition" ng-if="field.condition.enabled">
                                                 {{ field.condition.actionType }} this question if {{ field.condition.logicType }} of the following match:
@@ -158,6 +163,7 @@
 
                                 <div class="umb-forms__no-fields" ng-if="container.fields.length === 0 && !sortingMode">
                                     <umb-button
+                                        button-style="info"
                                         type="button"
                                         action="addField(fieldset, container)"
                                         label="Add question">
@@ -166,6 +172,7 @@
 
                                 <div class="umb-forms__field-footer" ng-if="container.fields.length > 0 && !sortingMode">
                                     <umb-button
+                                        button-style="info"
                                         type="button"
                                         action="addField(fieldset, container)"
                                         label="Add question">
@@ -287,33 +294,12 @@
     </umb-overlay>
 
     <umb-overlay
-        ng-if="fieldSettingsOverlay.show"
-        model="fieldSettingsOverlay"
-        position="right"
-        view="fieldSettingsOverlay.view">
-    </umb-overlay>
-
-    <umb-overlay
-        ng-if="workflowsOverlay.show"
-        model="workflowsOverlay"
-        position="right"
-        view="workflowsOverlay.view">
-    </umb-overlay>
-
-    <umb-overlay
         ng-if="workflowSettingsOverlay.show"
         model="workflowSettingsOverlay"
         position="right"
         view="workflowSettingsOverlay.view">
     </umb-overlay>
-
-    <umb-overlay
-        ng-if="submitMessageWorkflowOverlay.show"
-        model="submitMessageWorkflowOverlay"
-        position="right"
-        view="submitMessageWorkflowOverlay.view">
-    </umb-overlay>
-
+    
     <umb-overlay
         ng-if="fieldsetSettingsOverlay.show"
         model="fieldsetSettingsOverlay"
