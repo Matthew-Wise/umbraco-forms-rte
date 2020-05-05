@@ -160,9 +160,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\FormsRteApiController.cs" />
+    <Compile Include="Composing\FormsRteComponent.cs" />
+    <Compile Include="Composing\FormsRteComposer.cs" />
     <Compile Include="FieldTypes\RichText.cs" />
-    <Compile Include="FormsRteCreator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

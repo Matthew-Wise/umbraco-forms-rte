@@ -1,5 +1,6 @@
 ﻿using System;
 using Umbraco.Forms.Core;
+using Umbraco.Forms.Core.Enums;
 
 namespace Mw.UmbForms.Rte.FieldTypes
 {
@@ -16,8 +17,8 @@ namespace Mw.UmbForms.Rte.FieldTypes
             FieldTypeViewName = "FieldType.RichText.cshtml";
         }
 
-        [Umbraco.Forms.Core.Attributes.Setting("Html", description = "Rich text to display", 
-            view = "~/App_Plugins/Mw.UmbForms.Rte/editor.html")]
+        [Umbraco.Forms.Core.Attributes.Setting("Html", Description = "Rich text to display", 
+            View = "~/App_Plugins/Mw.UmbForms.Rte/editor.html")]
         public string Html { get; set; }
 
 
