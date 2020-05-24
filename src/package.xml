@@ -22,9 +22,9 @@
   <files>
     <folder path="Mw.UmbForms.Rte/App_Plugins/Mw.UmbForms.Rte" orgPath="App_Plugins/Mw.UmbForms.Rte" />
     <file path="Mw.UmbForms.Rte/bin/Release/net472/Mw.UmbForms.Rte.dll" orgPath="bin/Mw.UmbForms.Rte.dll" />
+    <file path="Mw.UmbForms.Rte/FieldType.RichText.cshtml" orgPath="Views/Partials/Forms/Themes/default/Fieldtypes/FieldType.RichText.cshtml" />
   </files>
   <Actions />
-  <control />
   <DocumentTypes />
   <Templates />
   <Stylesheets />

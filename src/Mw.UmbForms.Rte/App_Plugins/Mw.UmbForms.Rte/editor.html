@@ -1,5 +1,8 @@
-﻿﻿<div ng-controller="mw.umbFormsRteController as vm">
-    <div ng-repeat="editor in vm.htmfield">
+﻿﻿<div ng-controller="mw.umbFormsRteController">
+    <div ng-repeat="editor in htmfield" class="mw-rte-container">
         <umb-editor model="editor"></umb-editor>
     </div>
 </div>
+<style>
+    .mw-rte-container .umb-editor{ position: relative;}
+</style>

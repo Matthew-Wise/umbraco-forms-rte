@@ -1,0 +1,10 @@
+﻿@using Umbraco.Web.Templates
+@using Umbraco.Web.Composing
+@model Umbraco.Forms.Mvc.Models.FieldViewModel
+@{
+    string value;
+    if (Model.AdditionalSettings.TryGetValue("Html", out value))
+    {
+        @Html.Raw(TemplateUtilities.ParseInternalLinks(value, Current.UmbracoContext.UrlProvider))
+    }
+}
