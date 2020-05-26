@@ -9,8 +9,8 @@
       <url>https://our.umbraco.com/packages/backoffice-extensions/umbraco-forms-rich-text/</url>
       <requirements type="strict">
         <major>8</major>
-        <major>5</major>
-        <major>1</major>
+        <minor>5</minor>
+        <patch>1</patch>
       </requirements>
     </package>
     <author>

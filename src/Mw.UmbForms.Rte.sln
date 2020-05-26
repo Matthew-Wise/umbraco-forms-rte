@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mw.UmbForms.Rte", "Mw.UmbFo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{21718877-DE14-42F6-B3A5-7207C4ED9BAB}"
 	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\build-pr.yml = ..\.github\workflows\build-pr.yml
 		package.xml = package.xml
 	EndProjectSection
 EndProject

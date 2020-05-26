@@ -31,4 +31,4 @@
 /src/Mw.UmbForms.Rte.Web/App_Data/umbraco.licensing.log.txt
 /src/Mw.UmbForms.Rte.Web/*.user
 /test
-/src/output
+**/output
