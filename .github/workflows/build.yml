@@ -9,53 +9,44 @@ on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-      - 'v2.*'
+      - "v2.*"
 jobs:
-
   build:
     runs-on: windows-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2      
-
-      - name: Get Version
-        run: 
-          $SOURCE_TAG = ${env:GITHUB_REF} -replace 'refs/tags/', ""
-          echo "::set-env name=SOURCE_TAG::$SOURCE_TAG"
-
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"  
+        uses: actions/checkout@v2
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1.4.0
 
       - name: Build
-        run: dotnet build ${{env.SlnFile}} --configuration Release
-      
+        run: dotnet build ${{ env.SlnFile }} --configuration Release
+
   package:
     needs: build
     runs-on: windows-latest
 
-    steps:     
+    steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v2.x
         
       - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
       # - name: Pack Umbraco package
-      #   run: UmbPack pack .\src\package.xml -o ${{env.Output}} -v ${{GITHUB_REF##*/}}
+      #   run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.GITHUB_REF_SLUG }}
 
       - name: Pack NuGet package
-        run: dotnet pack ${{env.SlnFile}}
-              --configuration Release
-              --output ${{env.Output}}
-              -p:Version=${{env.SOURCE_TAG}}
-              -p:PackageId=Umbraco.Tools.Packages
+        run: dotnet pack ${{ env.SlnFile }}
+          --configuration Release
+          --output ${{ env.Output }}
+          -p:Version=${{ env.GITHUB_REF_SLUG }}
+          -p:PackageId=Umbraco.Tools.Packages
 
       - name: Create artifacts
         uses: actions/upload-artifact@v1
         with:
           name: my-artifact
-          path: ${{env.Output}}
+          path: ${{ env.Output }}
