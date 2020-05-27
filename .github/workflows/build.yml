@@ -52,7 +52,14 @@ jobs:
           -p:Version=${{ env.VERSION }}
           -p:PackageId=Mw.UmbracoForms.Rte
 
-      - name: Create artifacts
+      - name: Create NuGet package artifact
         uses: actions/upload-artifact@v1
-        with:          
-          path: ${{ env.Output }}
+        with:  
+          name: NuGet package
+          path: ${{ env.Output }}/**.nupkg
+
+      - name: Create NuGet package artifact
+        uses: actions/upload-artifact@v1
+        with:  
+          name: Umbraco package
+          path: ${{ env.Output }}/**.zip
