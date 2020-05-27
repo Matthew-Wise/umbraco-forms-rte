@@ -1,7 +1,7 @@
 name: Build and Package
 
 env:
-  PKG_VERSION: ${{ github.ref }}
+  PKG_VERSION: ${GITHUB_REF/refs\/tags\//}
   Output: .\output
 
 # Controls when the action will run
@@ -23,18 +23,18 @@ jobs:
         uses: actions/setup-dotnet@v1.4.0
 
       - name: Build
-        run: dotnet build '.\src\Mw.UmbForms.Rte.sln' --configuration Release
+        run: dotnet build './src/Mw.UmbForms.Rte.sln' --configuration Release
       
   package:
     needs: build
     runs-on: windows-latest
 
     steps:
-      - name: install Umbraco Package
+      - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.PKG_VERSION }} 
+        run: UmbPack pack './src/package.xml' -o ${{ env.Output }} -v ${{ env.PKG_VERSION }} 
 
       - name: Pack NuGet package
         run: dotnet pack ./src/ 
