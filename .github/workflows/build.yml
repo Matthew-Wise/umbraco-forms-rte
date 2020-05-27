@@ -24,7 +24,7 @@ jobs:
         run: echo ${{ steps.get_tag.outputs.VERSION }}
 
       - name: Split version for NuGet
-      - run:  |          
+        run:  |          
           echo "::set-env name=VERSION::${{ steps.get_tag.outputs.VERSION.Split("v")[1] }}"
 
       - name: Write Nuget Versions
