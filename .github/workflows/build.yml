@@ -10,18 +10,6 @@ on:
     tags:
       - "v2.*"
 jobs:
-  build:
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1.4.0
-
-      - name: Build
-        run: dotnet build .\src\Mw.UmbForms.Rte.sln --configuration Release
 
   inject-variables:
     runs-on: ubuntu-latest
@@ -35,16 +23,28 @@ jobs:
       - id: set
         run: echo "::set-output name=version::${{ env.GITHUB_REF_SLUG }}"
 
-  package:
-    needs: [build, inject-variables]
+  build:
+    needs: [inject-variables]
     runs-on: windows-latest
 
-    steps:    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1.4.0
+
       - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
+      - name: Build
+        run: dotnet build .\src\Mw.UmbForms.Rte.sln --configuration Release
+      
       - name: Write version
         run: echo "${{ needs.inject-variables.ouputs.version }}"
+
+      - name: Write variables
+        run: echo "${{ toJson(needs.inject-variables) }}"
      
       - name: Pack Umbraco package
         run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ needs.inject-variables.ouputs.version }}
