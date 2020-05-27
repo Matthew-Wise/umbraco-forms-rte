@@ -45,22 +45,22 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
 
       - name: output
-        run: echo ${{needs.inject-variables}}
+        run: echo ${{ toJson(needs.inject-variables) }}
 
       - name: output1
-        run: echo ${{needs.inject-variables.ouput}}
+        run: echo ${{ needs.inject-variables.ouputs }}
 
       - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ needs.inject-variables.ouput.version }}
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ needs.inject-variables.ouputs.version }}
 
       - name: Pack NuGet package
         run: dotnet pack .\src\Mw.UmbForms.Rte
           --configuration Release
           --output ${{ env.Output }}
-          -p:Version=${{ needs.inject-variables.ouput.version }}
+          -p:Version=${{ needs.inject-variables.ouputs.version }}
           -p:PackageId=Mw.UmbracoForms.Rte
 
       - name: Create artifacts
