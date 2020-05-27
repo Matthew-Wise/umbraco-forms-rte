@@ -26,7 +26,7 @@ jobs:
         run: dotnet build '.\src\Mw.UmbForms.Rte.sln' --configuration Release
         
       - name: install Umbraco Package
-        run: dotnet tool install Umbraco.Tools.Packages
+        run: dotnet tool install Umbraco.Tools.Packages --global
       
   package:
     needs: build
