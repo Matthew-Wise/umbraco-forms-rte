@@ -45,10 +45,10 @@ jobs:
         run: echo "${{ toJson(needs.inject-variables.outputs) }}"
 
       - name: Write version
-        run: echo ${needs.inject-variables.ouputs.version}
+        run: echo ${{needs.inject-variables.outputs.version}}
 
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ needs.inject-variables.ouputs.version }}
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ needs.inject-variables.outputs.version }}
 
       - name: Pack NuGet package
         run: dotnet pack .\src\Mw.UmbForms.Rte
