@@ -19,9 +19,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2      
 
-      - name: Version checkout
-        run: echo ${{GITHUB_REF##*/}}
+      - name: Get Version
+        run: 
+          $SOURCE_TAG = ${env:GITHUB_REF} -replace 'refs/tags/', ""
+          echo "::set-env name=SOURCE_TAG::$SOURCE_TAG"
 
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"  
+        
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1.4.0
 
