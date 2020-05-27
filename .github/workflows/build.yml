@@ -22,6 +22,13 @@ jobs:
 
       - name: Write version
         run: echo ${{ steps.get_tag.outputs.VERSION }}
+
+      - name: Split version for NuGet
+      - run:  |          
+          echo "::set-env name=VERSION::${{ steps.get_tag.outputs.VERSION.Split("v")[1] }}"
+
+      - name: Write Nuget Versions
+        run: echo ${{ env.VERSION }}
         
       - name: Checkout
         uses: actions/checkout@v2        
@@ -36,13 +43,13 @@ jobs:
         run: dotnet build .\src\Mw.UmbForms.Rte.sln --configuration Release
 
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ steps.get_tag.outputs.VERSION }}
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.VERSION }}
 
       - name: Pack NuGet package
-        run: dotnet pack .\src\Mw.UmbForms.Rte
+        run: dotnet pack .\src\Mw.UmbForms.Rte 
           --configuration Release
           --output ${{ env.Output }}
-          -p:Version=${{ steps.get_tag.outputs.VERSION }}
+          -p:Version=${{ env.VERSION }}
           -p:PackageId=Mw.UmbracoForms.Rte
 
       - name: Create artifacts
