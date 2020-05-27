@@ -43,20 +43,17 @@ jobs:
       - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
-      - name: Write inject-variables
-        run: echo "${{ toJson(needs.inject-variables) }}"
-      
-      - name: set version
-        run: echo "::set-env name=version::${{ needs.inject-variables.ouputs.version }}"
-
+      - name: Write version
+        run: echo "${{ needs.inject-variables.ouputs.version }}"
+     
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.version }}
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ needs.inject-variables.ouputs.version }}
 
       - name: Pack NuGet package
         run: dotnet pack .\src\Mw.UmbForms.Rte
           --configuration Release
           --output ${{ env.Output }}
-          -p:Version=${{ env.version }}
+          -p:Version=${{ needs.inject-variables.ouputs.version }}
           -p:PackageId=Mw.UmbracoForms.Rte
 
       - name: Create artifacts
