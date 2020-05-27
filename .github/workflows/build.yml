@@ -1,7 +1,6 @@
 name: Build and Package
 
-env:
-  PKG_VERSION: ${GITHUB_REF/refs\/tags\//}
+env:  
   Output: .\output
 
 # Controls when the action will run
@@ -11,6 +10,16 @@ on:
     tags:
       - 'v2.*'
 jobs:
+  setEnvrioment:
+    steps:
+     - name: Get tag name
+        id: get_tag_name
+        run: echo ::set-env name=PKG_VERSION::${GITHUB_REF/refs\/tags\//}
+
+      - name: Test
+        run: |
+          echo $PKG_VERSION
+          echo ${{ env.PKG_VERSION }}
   build:
 
     runs-on: windows-latest
@@ -29,12 +38,13 @@ jobs:
     needs: build
     runs-on: windows-latest
 
-    steps:
+    steps:     
+        
       - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
       - name: Pack Umbraco package
-        run: UmbPack pack './src/package.xml' -o ${{ env.Output }} -v ${{ env.PKG_VERSION }} 
+        run: UmbPack pack ./src/package.xml -o ${{ env.Output }} -v ${{ env.PKG_VERSION }} 
 
       - name: Pack NuGet package
         run: dotnet pack ./src/ 
@@ -42,3 +52,9 @@ jobs:
               --output ${{env.Output}}
               -p:Version=${{ env.PKG_VERSION }} 
               -p:PackageId=Umbraco.Tools.Packages
+              
+      - name: Create artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: my-artifact
+          path: ${{ env.Output }}
