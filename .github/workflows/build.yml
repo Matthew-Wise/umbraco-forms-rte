@@ -2,6 +2,7 @@ name: Build and Package
 
 env:
   Output: .\output
+  SlnFile: .\src\Mw.UmbForms.Rte.sln
 
 # Controls when the action will run
 on:
@@ -25,7 +26,7 @@ jobs:
         uses: actions/setup-dotnet@v1.4.0
 
       - name: Build
-        run: dotnet build './src/Mw.UmbForms.Rte.sln' --configuration Release
+        run: dotnet build ${env.SlnFile} --configuration Release
       
   package:
     needs: build
@@ -40,7 +41,7 @@ jobs:
       #   run: UmbPack pack .\src\package.xml -o ${env.Output} -v ${GITHUB_REF##*/}
 
       - name: Pack NuGet package
-        run: dotnet pack ./src/ 
+        run: dotnet pack ${env.SlnFile}
               --configuration Release
               --output ${env.Output}
               -p:Version=${GITHUB_REF##*/}
