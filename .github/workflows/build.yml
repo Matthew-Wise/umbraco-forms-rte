@@ -40,7 +40,7 @@ jobs:
         run: dotnet build .\src\Mw.UmbForms.Rte.sln --configuration Release
       
       - name: Write version
-        run: echo "${{ needs.inject-variables.ouputs.version }}"
+        run: echo ${{ needs.inject-variables.ouputs.version }}
 
       - name: Write variables
         run: echo "${{ toJson(needs.inject-variables) }}"
