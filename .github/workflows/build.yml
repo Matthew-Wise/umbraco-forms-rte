@@ -11,8 +11,6 @@ on:
       - 'v2.*'
 jobs:
 
-  
-
   build:
     runs-on: windows-latest
 
@@ -20,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-     - name: Get tag name
+      - name: Get tag name
         run: echo ::set-env name=PKG_VERSION::${GITHUB_REF#refs/*/}
 
       - name: Test
