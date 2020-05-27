@@ -29,7 +29,8 @@ jobs:
     steps: 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v2.x
-
+      - name: set output
+        run: echo "::set-env name=version::${env.GITHUB_REF_SLUG}"
   package:
     needs: [build, inject-variables]
     runs-on: windows-latest
@@ -38,13 +39,19 @@ jobs:
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}          
-        run: echo "$GITHUB_CONTEXT"  
-        
+        run: echo "$GITHUB_CONTEXT"
+
+      - name: output
+        run: echo ${{jobs.inject-variables.env.GITHUB_REF_SLUG}}
+
+      - name: output1
+        run: echo ${{jobs.inject-variables}}
+
       - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.GITHUB_REF_SLUG }}
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.version }}
 
       - name: Pack NuGet package
         run: dotnet pack .\src\Mw.UmbForms.Rte
