@@ -11,7 +11,7 @@ on:
       - "2.*"
 jobs:    
 
-  build:
+  build-and-package:
     runs-on: windows-latest
 
     steps:
@@ -43,7 +43,7 @@ jobs:
         run: dotnet build .\src\Mw.UmbForms.Rte.sln --configuration Release
 
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }}/umbraco -v ${{ env.VERSION }}
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.VERSION }}
 
       - name: Pack NuGet package
         run: dotnet pack .\src\Mw.UmbForms.Rte 
@@ -55,11 +55,11 @@ jobs:
       - name: Create NuGet package artifact
         uses: actions/upload-artifact@v1
         with:  
-          name: NuGet package
-          path: ${{ env.Output }}/nuget
+          name: Mw.UmbracoForms.${{ env.VERSION }}.nupkg
+          path: ${{ env.Output }}/Mw.UmbracoForms.${{ env.VERSION }}.nupkg
 
       - name: Create Umbraco package artifact
         uses: actions/upload-artifact@v1
         with:  
-          name: Umbraco package
-          path: ${{ env.Output }}/umbraco
+          name: Umbraco_Forms_Rich_Text_${{ env.VERSION }}
+          path: ${{ env.Output }}/Umbraco_Forms_Rich_Text_${{ env.VERSION }}.zip
