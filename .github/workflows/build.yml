@@ -20,13 +20,13 @@ jobs:
         uses: actions/checkout@v2      
 
       - name: Version checkout
-        run: echo ${GITHUB_REF##*/}
+        run: echo ${{GITHUB_REF##*/}}
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1.4.0
 
       - name: Build
-        run: dotnet build ${env.SlnFile} --configuration Release
+        run: dotnet build ${{env.SlnFile}} --configuration Release
       
   package:
     needs: build
@@ -38,17 +38,17 @@ jobs:
         run: dotnet tool install Umbraco.Tools.Packages --global
 
       # - name: Pack Umbraco package
-      #   run: UmbPack pack .\src\package.xml -o ${env.Output} -v ${GITHUB_REF##*/}
+      #   run: UmbPack pack .\src\package.xml -o ${{env.Output}} -v ${{GITHUB_REF##*/}}
 
       - name: Pack NuGet package
-        run: dotnet pack ${env.SlnFile}
+        run: dotnet pack ${{env.SlnFile}}
               --configuration Release
-              --output ${env.Output}
-              -p:Version=${GITHUB_REF##*/}
+              --output ${{env.Output}}
+              -p:Version=${{GITHUB_REF##*/}}
               -p:PackageId=Umbraco.Tools.Packages
 
       - name: Create artifacts
         uses: actions/upload-artifact@v1
         with:
           name: my-artifact
-          path: ${env.Output}
+          path: ${{env.Output}}
