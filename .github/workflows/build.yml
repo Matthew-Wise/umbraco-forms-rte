@@ -42,14 +42,10 @@ jobs:
           -p:Version=${{ steps.get_tag.outputs.VERSION }}
           -p:PackageId=Mw.UmbracoForms.Rte
 
-      - name: Create NuGet package artifact
-        uses: actions/upload-artifact@v2
-        with:  
-          name: Mw.UmbracoForms.${{ steps.get_tag.outputs.VERSION }}.nupkg
-          path: ${{ env.Output }}\Mw.UmbracoForms.Rte.${{ steps.get_tag.outputs.VERSION }}.nupkg
+      - name: Push package to NuGet
+        run: dotnet nuget push ${{ env.Output }}\Mw.UmbracoForms.Rte.${{ steps.get_tag.outputs.VERSION }}.nupkg
+              --api-key ${{ secrets.NUGET_DEPLOY_KEY }}
+              --source https://api.nuget.org/v3/index.json
 
-      - name: Create Umbraco package artifact
-        uses: actions/upload-artifact@v2
-        with:  
-          name: Umbraco_Forms_Rich_Text_${{ steps.get_tag.outputs.VERSION }}
-          path: ${{ env.Output }}\Umbraco_Forms_Rich_Text_${{ steps.get_tag.outputs.VERSION }}.zip
+      - name: Push package to Umbraco
+        run: umbpack push -k ${{ secrets.UMBRACO_DEPLOY_KEY }} ${{ env.Output }}\Umbraco_Forms_Rich_Text_${{ steps.get_tag.outputs.VERSION }}.zip
