@@ -28,7 +28,7 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"  
-        
+
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1.4.0
 
@@ -51,7 +51,7 @@ jobs:
         run: dotnet pack ${{env.SlnFile}}
               --configuration Release
               --output ${{env.Output}}
-              -p:Version=${{GITHUB_REF##*/}}
+              -p:Version=${{env.SOURCE_TAG}}
               -p:PackageId=Umbraco.Tools.Packages
 
       - name: Create artifacts
