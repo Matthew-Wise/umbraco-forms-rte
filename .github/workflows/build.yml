@@ -24,17 +24,17 @@ jobs:
 
       - name: Build
         run: dotnet build '.\src\Mw.UmbForms.Rte.sln' --configuration Release
-        
-      - name: install Umbraco Package
-        run: dotnet tool install Umbraco.Tools.Packages --global
       
   package:
     needs: build
     runs-on: windows-latest
 
     steps:
+      - name: install Umbraco Package
+        run: dotnet tool install Umbraco.Tools.Packages --global
+
       - name: Pack Umbraco package
-        run: umbpack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.PKG_VERSION }} 
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.PKG_VERSION }} 
 
       - name: Pack NuGet package
         run: dotnet pack ./src/ 
