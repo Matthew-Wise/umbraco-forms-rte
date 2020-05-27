@@ -10,17 +10,19 @@ on:
     tags:
       - 'v2.*'
 jobs:
+
   setEnvrioment:
+    runs-on: ubuntu-latest
     steps:
      - name: Get tag name
-        run: echo ::set-env name=PKG_VERSION::${GITHUB_REF/refs\/tags\//}
+        run: echo ::set-env name=PKG_VERSION::::${GITHUB_REF#refs/*/}
 
       - name: Test
         run: |
           echo $PKG_VERSION
           echo ${{ env.PKG_VERSION }}
-  build:
 
+  build:
     runs-on: windows-latest
 
     steps:
