@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<umbPackage>
+  <info>
+    <package>
+      <name>Umbraco Forms Rich Text</name>
+      <version>2.0.0</version>
+      <iconUrl></iconUrl>
+      <licence url="https://opensource.org/licenses/MIT">MIT</licence>
+      <url>https://our.umbraco.com/packages/backoffice-extensions/umbraco-forms-rich-text/</url>
+      <requirements type="strict">
+        <major>8</major>
+        <minor>5</minor>
+        <patch>1</patch>
+      </requirements>
+    </package>
+    <author>
+      <name>Matthew Wise</name>
+      <website>https://github.com/Matthew-Wise/umbraco-forms-rte</website>
+    </author>
+    <readme><![CDATA[Adds a richtext field to Umbraco forms similar to title]]></readme>
+  </info>
+  <files>
+    <folder path="Mw.UmbForms.Rte/App_Plugins/Mw.UmbForms.Rte" orgPath="App_Plugins/Mw.UmbForms.Rte" />
+    <file path="Mw.UmbForms.Rte/bin/Release/net472/Mw.UmbForms.Rte.dll" orgPath="bin/Mw.UmbForms.Rte.dll" />
+    <file path="Mw.UmbForms.Rte/FieldType.RichText.cshtml" orgPath="Views/Partials/Forms/Themes/default/Fieldtypes/FieldType.RichText.cshtml" />
+  </files>
+  <Actions />
+  <DocumentTypes />
+  <Templates />
+  <Stylesheets />
+  <Macros />
+  <DictionaryItems />
+  <Languages />
+  <DataTypes />
+</umbPackage>
