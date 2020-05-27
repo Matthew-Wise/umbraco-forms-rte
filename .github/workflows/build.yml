@@ -54,6 +54,5 @@ jobs:
 
       - name: Create artifacts
         uses: actions/upload-artifact@v1
-        with:
-          name: my-artifact
+        with:          
           path: ${{ env.Output }}
