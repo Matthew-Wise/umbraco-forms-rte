@@ -20,13 +20,11 @@ jobs:
 
       - name: Get tag name
         env:
-          PKG_VERSION: github.ref -split "refs\/tags\/"
+          PKG_VERSION: ${{ github.ref -split "refs\/tags\/" }}
         run: echo "$PKG_VERSION" 
 
       - name: Test
-        run: |
-          echo "$PKG_VERSION"
-          echo "${{ env.PKG_VERSION }}"
+        run: echo "$PKG_VERSION"
 
       - name: Dump GitHub context
         env:
