@@ -27,10 +27,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     outputs:
-      version: ${{env.GITHUB_REF_SLUG}}
+      version1: ${{ steps.set.outputs.version }}
+      version2: ${{ env.GITHUB_REF_SLUG }}
     steps: 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v2.x
+      
+      - id: set
+        run: echo "::set-output name=version::${{ env.GITHUB_REF_SLUG }}"
   package:
     needs: [build, inject-variables]
     runs-on: windows-latest
@@ -39,9 +43,11 @@ jobs:
       - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
+      - name: Write inject-variables
+        run: echo "${{needs.inject-variables}}"
       - name: Write version
         run: echo "${{needs.inject-variables.ouputs.version}}"
-        
+
       - name: Pack Umbraco package
         run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v '${{ needs.inject-variables.ouputs.version }}'
 
