@@ -43,12 +43,12 @@ jobs:
         run: dotnet build .\src\Mw.UmbForms.Rte.sln --configuration Release
 
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.VERSION }}
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }}/umbraco -v ${{ env.VERSION }}
 
       - name: Pack NuGet package
         run: dotnet pack .\src\Mw.UmbForms.Rte 
           --configuration Release
-          --output ${{ env.Output }}
+          --output ${{ env.Output }}/nuget
           -p:Version=${{ env.VERSION }}
           -p:PackageId=Mw.UmbracoForms.Rte
 
@@ -56,10 +56,10 @@ jobs:
         uses: actions/upload-artifact@v1
         with:  
           name: NuGet package
-          path: ${{ env.Output }}/**.nupkg
+          path: ${{ env.Output }}/nuget
 
-      - name: Create NuGet package artifact
+      - name: Create Umbraco package artifact
         uses: actions/upload-artifact@v1
         with:  
           name: Umbraco package
-          path: ${{ env.Output }}/**.zip
+          path: ${{ env.Output }}/umbraco
