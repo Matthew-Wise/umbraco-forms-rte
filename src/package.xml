@@ -4,7 +4,7 @@
     <package>
       <name>Umbraco Forms Rich Text</name>
       <version>2.0.0</version>
-      <iconUrl></iconUrl>
+      <iconUrl>https://raw.githubusercontent.com/Matthew-Wise/umbraco-forms-rte/master/src/Mw.UmbForms.Rte/icon.png</iconUrl>
       <licence url="https://opensource.org/licenses/MIT">MIT</licence>
       <url>https://our.umbraco.com/packages/backoffice-extensions/umbraco-forms-rich-text/</url>
       <requirements type="strict">

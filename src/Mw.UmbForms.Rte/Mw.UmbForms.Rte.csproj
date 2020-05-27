@@ -1,8 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <Authors>Matthew Wise</Authors>
+    <Company />
+    <Description>Adds a richtext field to Umbraco forms similar to title</Description>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl />
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="App_Plugins\**" Pack="true" PackagePath="">
+      <Pack>True</Pack>
+      <PackagePath>Content\App_Plugins\</PackagePath>
+    </None>
+    <None Include="FieldType.RichText.cshtml" Pack="true" PackagePath="" >
+      <Pack>True</Pack>
+      <PackagePath>Content\Views\Partials\Forms\Themes\default\Fieldtypes\</PackagePath>
+    </None>
+    <None Include="icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">

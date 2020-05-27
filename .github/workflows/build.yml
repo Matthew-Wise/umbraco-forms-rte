@@ -55,6 +55,12 @@ jobs:
       - name: Create NuGet package artifact
         uses: actions/upload-artifact@v1
         with:  
+          name: Bundle
+          path: ${{ env.Output }}
+
+      - name: Create NuGet package artifact
+        uses: actions/upload-artifact@v1
+        with:  
           name: Mw.UmbracoForms.${{ env.VERSION }}.nupkg
           path: ${{ env.Output }}/Mw.UmbracoForms.${{ env.VERSION }}.nupkg
 
