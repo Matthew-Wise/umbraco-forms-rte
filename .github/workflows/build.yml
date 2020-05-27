@@ -1,8 +1,7 @@
 name: Build and Package
 
 env:
-  Output: .\output
-  SlnFile: .\src\Mw.UmbForms.Rte.sln
+  Output: .\output  
 
 # Controls when the action will run
 on:
@@ -22,7 +21,7 @@ jobs:
         uses: actions/setup-dotnet@v1.4.0
 
       - name: Build
-        run: dotnet build ${{ env.SlnFile }} --configuration Release
+        run: dotnet build .\src\Mw.UmbForms.Rte.sln --configuration Release
 
   inject-variables:
     runs-on: ubuntu-latest
@@ -36,19 +35,23 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}          
+        run: echo "$GITHUB_CONTEXT"  
         
       - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
-      # - name: Pack Umbraco package
-      #   run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.GITHUB_REF_SLUG }}
+      - name: Pack Umbraco package
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.GITHUB_REF_SLUG }}
 
       - name: Pack NuGet package
-        run: dotnet pack ${{ env.SlnFile }}
+        run: dotnet pack .\src\Mw.UmbForms.Rte
           --configuration Release
           --output ${{ env.Output }}
           -p:Version=${{ env.GITHUB_REF_SLUG }}
-          -p:PackageId=Umbraco.Tools.Packages
+          -p:PackageId=Mw.UmbracoForms.Rte
 
       - name: Create artifacts
         uses: actions/upload-artifact@v1
