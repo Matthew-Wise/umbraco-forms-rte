@@ -42,20 +42,12 @@ jobs:
           -p:Version=${{ steps.get_tag.outputs.VERSION }}
           -p:PackageId=Mw.UmbracoForms.Rte
 
-      - name: All of output
-        uses: actions/upload-artifact@v1
-        with:  
-          name: output
-          path: ${{ env.Output }}
-
       - name: Create NuGet package artifact
-        uses: actions/upload-artifact@v1
-        with:  
-          name: Mw.UmbracoForms.${{ steps.get_tag.outputs.VERSION }}.nupkg
+        uses: actions/upload-artifact@v2
+        with:
           path: ${{ env.Output }}\Mw.UmbracoForms.Rte.${{ steps.get_tag.outputs.VERSION }}.nupkg
 
       - name: Create Umbraco package artifact
-        uses: actions/upload-artifact@v1
-        with:  
-          name: Umbraco_Forms_Rich_Text_${{ steps.get_tag.outputs.VERSION }}
+        uses: actions/upload-artifact@v2
+        with:
           path: ${{ env.Output }}\Umbraco_Forms_Rich_Text_${{ steps.get_tag.outputs.VERSION }}.zip
