@@ -26,8 +26,17 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Write variables
+        run: echo "${{ toJson(needs.inject-variables) }}"
+
+      - name: Write outputs
+        run: echo "${{ toJson(needs.inject-variables.outputs) }}"
+
+      - name: Write version
+        run: echo ${{needs.inject-variables.outputs.version}}
+        
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2        
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1.4.0
@@ -38,15 +47,6 @@ jobs:
       - name: Build
         run: dotnet build .\src\Mw.UmbForms.Rte.sln --configuration Release
 
-      - name: Write variables
-        run: echo "${{ toJson(needs.inject-variables) }}"
-
-      - name: Write outputs
-        run: echo "${{ toJson(needs.inject-variables.outputs) }}"
-
-      - name: Write version
-        run: echo ${{needs.inject-variables.outputs.version}}
-
       - name: Pack Umbraco package
         run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ needs.inject-variables.outputs.version }}
 
@@ -54,7 +54,7 @@ jobs:
         run: dotnet pack .\src\Mw.UmbForms.Rte
           --configuration Release
           --output ${{ env.Output }}
-          -p:Version=${{ needs.inject-variables.ouputs.version }}
+          -p:Version=${{ needs.inject-variables.outputs.version }}
           -p:PackageId=Mw.UmbracoForms.Rte
 
       - name: Create artifacts
