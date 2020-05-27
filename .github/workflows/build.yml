@@ -1,7 +1,7 @@
 name: Build and Package
 
 env:
-  Output: .\output  
+  Output: .\output
 
 # Controls when the action will run
 on:
@@ -10,15 +10,14 @@ on:
     tags:
       - "v2.*"
 jobs:
-
   inject-variables:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.set.outputs.version }}
-    steps: 
+    steps:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v2.x
-      
+
       - id: set
         run: echo "::set-output name=version::${{ env.GITHUB_REF_SLUG }}"
 
@@ -38,13 +37,16 @@ jobs:
 
       - name: Build
         run: dotnet build .\src\Mw.UmbForms.Rte.sln --configuration Release
-      
-      - name: Write version
-        run: echo ${{ needs.inject-variables.ouputs.version }}
 
       - name: Write variables
         run: echo "${{ toJson(needs.inject-variables) }}"
-     
+
+      - name: Write outputs
+        run: echo "${{ toJson(needs.inject-outputs) }}"
+
+      - name: Write version
+        run: echo ${{ needs.inject-variables.ouputs.version }}
+
       - name: Pack Umbraco package
         run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ needs.inject-variables.ouputs.version }}
 
