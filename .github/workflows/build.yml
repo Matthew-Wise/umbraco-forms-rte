@@ -32,7 +32,7 @@ jobs:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v2.x
       
-      - id: set version
+      - id: set
         run: echo "::set-output name=version::${{ env.GITHUB_REF_SLUG }}"
 
   package:
@@ -48,7 +48,7 @@ jobs:
       
       - name: set version
         run: echo "::set-env name=version::${{ needs.inject-variables.ouputs.version }}"
-        
+
       - name: Pack Umbraco package
         run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.version }}
 
