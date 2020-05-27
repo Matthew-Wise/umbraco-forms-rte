@@ -20,7 +20,7 @@ jobs:
 
       - name: Get tag name
         env:
-          PKG_VERSION: ${{GITHUB_REF#refs/tags/}}
+          PKG_VERSION: $(echo ${GITHUB_REF#refs/heads/})
         run: echo "$PKG_VERSION" 
 
       - name: Test
