@@ -26,11 +26,14 @@ jobs:
   inject-variables:
     runs-on: ubuntu-latest
     needs: [build]
+    outputs:
+      version: ${{ steps.set_output.outputs.version }}
+      envVersion: ${{env.GITHUB_REF_SLUG}}
     steps: 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v2.x
-      - name: set output
-        run: echo "::set-env name=version::${env.GITHUB_REF_SLUG}"
+      - id: set_output
+        run: echo "::set-output name=version::${env.GITHUB_REF_SLUG}"
   package:
     needs: [build, inject-variables]
     runs-on: windows-latest
@@ -42,22 +45,22 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
 
       - name: output
-        run: echo ${{jobs.inject-variables.env.GITHUB_REF_SLUG}}
+        run: echo ${{needs.inject-variables.env}}
 
       - name: output1
-        run: echo ${{jobs.inject-variables}}
+        run: echo ${{needs.inject-variables.ouput}}
 
       - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.version }}
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ needs.inject-variables.ouput.version }}
 
       - name: Pack NuGet package
         run: dotnet pack .\src\Mw.UmbForms.Rte
           --configuration Release
           --output ${{ env.Output }}
-          -p:Version=${{ env.GITHUB_REF_SLUG }}
+          -p:Version=${{ needs.inject-variables.ouput.version }}
           -p:PackageId=Mw.UmbracoForms.Rte
 
       - name: Create artifacts
