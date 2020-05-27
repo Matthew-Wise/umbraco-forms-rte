@@ -13,7 +13,6 @@ jobs:
   setEnvrioment:
     steps:
      - name: Get tag name
-        id: get_tag_name
         run: echo ::set-env name=PKG_VERSION::${GITHUB_REF/refs\/tags\//}
 
       - name: Test
@@ -52,7 +51,7 @@ jobs:
               --output ${{env.Output}}
               -p:Version=${{ env.PKG_VERSION }} 
               -p:PackageId=Umbraco.Tools.Packages
-              
+
       - name: Create artifacts
         uses: actions/upload-artifact@v1
         with:
