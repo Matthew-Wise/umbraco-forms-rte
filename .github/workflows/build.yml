@@ -9,31 +9,19 @@ on:
     # Sequence of patterns matched against refs/tags
     tags:
       - "v2.*"
-jobs:
-  inject-variables:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.set.outputs.version }}
-    steps:
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v2.x
-
-      - id: set
-        run: echo "::set-output name=version::${{ env.GITHUB_REF_SLUG }}"
+jobs:    
 
   build:
-    needs: [inject-variables]
     runs-on: windows-latest
 
     steps:
-      - name: Write variables
-        run: echo "${{ toJson(needs.inject-variables) }}"
-
-      - name: Write outputs
-        run: echo "${{ toJson(needs.inject-variables.outputs) }}"
+      - name: Get tag
+        id: get_tag
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        shell: bash        
 
       - name: Write version
-        run: echo ${{needs.inject-variables.outputs.version}}
+        run: echo ${{ steps.get_tag.outputs.VERSION }}
         
       - name: Checkout
         uses: actions/checkout@v2        
@@ -48,13 +36,13 @@ jobs:
         run: dotnet build .\src\Mw.UmbForms.Rte.sln --configuration Release
 
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ needs.inject-variables.outputs.version }}
+        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ steps.get_tag.outputs.VERSION }}
 
       - name: Pack NuGet package
         run: dotnet pack .\src\Mw.UmbForms.Rte
           --configuration Release
           --output ${{ env.Output }}
-          -p:Version=${{ needs.inject-variables.outputs.version }}
+          -p:Version=${{ steps.get_tag.outputs.VERSION }}
           -p:PackageId=Mw.UmbracoForms.Rte
 
       - name: Create artifacts
