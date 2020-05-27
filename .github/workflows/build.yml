@@ -13,7 +13,6 @@ jobs:
 
   inject-variables:
     runs-on: ubuntu-latest
-    needs: [build]
     outputs:
       version: ${{ steps.set.outputs.version }}
     steps: 
