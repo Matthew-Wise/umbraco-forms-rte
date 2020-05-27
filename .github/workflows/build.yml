@@ -1,7 +1,6 @@
 name: Build and Package
 
-env:  
-  PKG_VERSION: ${GITHUB_REF##*/}
+env:
   Output: .\output
 
 # Controls when the action will run
@@ -35,17 +34,17 @@ jobs:
         run: dotnet tool install Umbraco.Tools.Packages --global
 
       - name: Pack Umbraco package
-        run: UmbPack pack .\src\package.xml -o ${{ env.Output }} -v ${{ env.PKG_VERSION }} 
+        run: UmbPack pack .\src\package.xml -o ${env.Output} -v ${GITHUB_REF##*/}
 
       - name: Pack NuGet package
         run: dotnet pack ./src/ 
               --configuration Release
-              --output ${{env.Output}}
-              -p:Version=${{ env.PKG_VERSION }} 
+              --output ${env.Output}
+              -p:Version=${GITHUB_REF##*/}
               -p:PackageId=Umbraco.Tools.Packages
 
       - name: Create artifacts
         uses: actions/upload-artifact@v1
         with:
           name: my-artifact
-          path: ${{ env.Output }}
+          path: ${env.Output}
