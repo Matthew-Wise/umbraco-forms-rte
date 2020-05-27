@@ -38,18 +38,7 @@ jobs:
     needs: [build, inject-variables]
     runs-on: windows-latest
 
-    steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}          
-        run: echo "$GITHUB_CONTEXT"
-
-      - name: output
-        run: echo ${{ toJson(needs.inject-variables) }}
-
-      - name: output1
-        run: echo ${{ needs.inject-variables.ouputs }}
-
+    steps:    
       - name: install Umbraco package tool
         run: dotnet tool install Umbraco.Tools.Packages --global
 
