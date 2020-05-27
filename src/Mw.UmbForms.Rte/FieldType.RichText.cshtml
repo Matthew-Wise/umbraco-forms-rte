@@ -5,6 +5,8 @@
     string value;
     if (Model.AdditionalSettings.TryGetValue("Html", out value))
     {
-        @Html.Raw(TemplateUtilities.ParseInternalLinks(value, Current.UmbracoContext.UrlProvider))
+        <div id="@Model.Id">
+            @Html.Raw(TemplateUtilities.ParseInternalLinks(value, Current.UmbracoContext.UrlProvider))
+        </div>
     }
 }
