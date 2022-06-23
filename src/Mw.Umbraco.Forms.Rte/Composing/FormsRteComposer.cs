@@ -1,4 +1,5 @@
-﻿using Mw.Umbraco.Forms.Rte.NotificationHandlers;
+﻿using Mw.Umbraco.Forms.Rte.Extensions;
+using Mw.Umbraco.Forms.Rte.NotificationHandlers;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Core.Notifications;
@@ -11,5 +12,6 @@ public class FormsRteComposer : IComposer
     {
         builder.AddComponent<FormsRteComponent>();
         builder.AddNotificationHandler<DataTypeDeletingNotification, StopFormRteDeleteNotificationHandler>();
+        builder.AddFormsRteField();
     }
 }
