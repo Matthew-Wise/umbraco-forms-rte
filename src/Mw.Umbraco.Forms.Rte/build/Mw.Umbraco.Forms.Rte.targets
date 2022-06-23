@@ -1,0 +1,29 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <MwUmbracoFormsRteContentFilesPath>$(MSBuildThisFileDirectory)..\App_Plugins\Mw.Umbraco.Forms.Rte\**\*.*</MwUmbracoFormsRteContentFilesPath>
+		<MwUmbracoFormsRteRazorFilesPath>$(MSBuildThisFileDirectory)..\Views\Partials\Forms\Themes\default\Fieldtypes\**\*.*</MwUmbracoFormsRteRazorFilesPath>
+    </PropertyGroup>
+
+    <Target Name="CopyMwUmbracoFormsRteAssets" BeforeTargets="Build">
+        <ItemGroup>
+            <MwUmbracoFormsRteContentFiles Include="$(MwUmbracoFormsRteContentFilesPath)" />
+			<MwUmbracoFormsRteRazorFiles Include="$(MwUmbracoFormsRteRazorFilesPath)" />
+        </ItemGroup>
+        <Message Text="Copying Mw.Umbraco.Forms.Rte files: $(MwUmbracoFormsRteContentFilesPath) - #@(MwUmbracoFormsRteContentFiles->Count()) files" Importance="high" />
+        <Copy SourceFiles="@(MwUmbracoFormsRteContentFiles)" DestinationFiles="@(MwUmbracoFormsRteContentFiles->'$(MSBuildProjectDirectory)\App_Plugins\Mw.Umbraco.Forms.Rte\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+        
+        <Message Text="Copying Mw.Umbraco.Forms.Rte Razor files: $(MwUmbracoFormsRteRazorFilesPath) - #@(MwUmbracoFormsRteRazorFilesPath->Count()) files"  Importance="high" />
+        <Copy
+	        SourceFiles="@(MwUmbracoFormsRteRazorFiles)"
+	        DestinationFiles="@(MwUmbracoFormsRteRazorFiles->'$(MSBuildProjectDirectory)\Views\Partials\Forms\Themes\default\Fieldtypes\%(RecursiveDir)%(Filename)%(Extension)')"
+	        SkipUnchangedFiles="true"	/>
+    </Target>
+    
+    <Target Name="ClearMwUmbracoFormsRteAssets" BeforeTargets="Clean">
+        <ItemGroup>
+            <MwUmbracoFormsRteDir Include="$(MSBuildProjectDirectory)\App_Plugins\Mw.Umbraco.Forms.Rte\" />
+        </ItemGroup>
+        <Message Text="Clear old Mw.Umbraco.Forms.Rte data" Importance="high" />
+        <RemoveDir Directories="@(MwUmbracoFormsRteDir)" />
+    </Target>
+</Project>

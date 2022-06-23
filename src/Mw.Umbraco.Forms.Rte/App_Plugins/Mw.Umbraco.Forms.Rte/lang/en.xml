@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<language alias="en" intName="English (UK)" localName="English (UK)" lcid="" culture="en-GB">
+  <creator>
+    <name>Matthew Wise</name>
+    <link>https://github.com/Matthew-Wise/umbraco-forms-rte</link>
+  </creator>
+  <area alias="FormsRTE">
+    <key alias="Error">This data type is used by Umbraco Forms Rich Text field</key>
+  </area>
+</language>
