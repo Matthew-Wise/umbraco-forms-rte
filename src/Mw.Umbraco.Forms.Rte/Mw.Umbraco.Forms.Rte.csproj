@@ -31,10 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="App_Plugins\Mw.Umbraco.Forms.Rte\**">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
     <None Include="build\**">
       <Pack>true</Pack>
       <PackagePath>buildTransitive</PackagePath>
@@ -42,11 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="App_Plugins\Mw.Umbraco.Forms.Rte\design.html" />
-    <None Remove="App_Plugins\Mw.Umbraco.Forms.Rte\editor.html" />
-    <None Remove="App_Plugins\Mw.Umbraco.Forms.Rte\lang\en.xml" />
-    <None Remove="App_Plugins\Mw.Umbraco.Forms.Rte\lang\en_us.xml" />
-    <None Remove="App_Plugins\Mw.Umbraco.Forms.Rte\rte.controller.js" />
     <None Remove="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.RichText.cshtml" />
   </ItemGroup>
 
