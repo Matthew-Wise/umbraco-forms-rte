@@ -5,7 +5,7 @@ using Umbraco.Forms.Core.Enums;
 
 namespace Mw.Umbraco.Forms.Rte
 {
-    public class FormsRteFieldType : FieldType
+    public sealed class FormsRteFieldType : FieldType
     {
         public FormsRteFieldType()
         {
@@ -18,13 +18,13 @@ namespace Mw.Umbraco.Forms.Rte
             FieldTypeViewName = "FieldType.RichText.cshtml";
         }
 
-        [Setting("Html", Description = "Rich text to display", View = "~/App_Plugins/Mw.UmbForms.Rte/editor.html")]
+        [Setting("Html", Description = "Rich text to display", View = "~/App_Plugins/Mw.Umbraco.Forms.Rte/editor.html")]
         public string Html { get; set; }
 
         public override bool HideLabel => true;
 
         public override bool StoresData => false;
 
-        public override string GetDesignView() => "~/App_Plugins/Mw.UmbForms.Rte/design.html";
+        public override string GetDesignView() => "~/App_Plugins/Mw.Umbraco.Forms.Rte/design.html";
     }
 }
