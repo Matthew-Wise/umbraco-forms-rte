@@ -10,13 +10,16 @@
 	  <AssemblyVersion>4.0.0</AssemblyVersion>
 	  <FileVersion>$(AssemblyVersion)</FileVersion>
 	  <Version>$(AssemblyVersion)</Version>
-	  <Company>Matthew Wise, Aaron Sadler</Company>
+	  <Company></Company>
 	  <Copyright>2022</Copyright>
 	  <PackageProjectUrl>https://github.com/Matthew-Wise/umbraco-forms-rte</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/Matthew-Wise/umbraco-forms-rte</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageReleaseNotes>Umbraco 10</PackageReleaseNotes>
+	  <Authors>Matthew Wise, Aaron Sadler</Authors>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,11 +42,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="App_Plugins\Mw.Umbraco.Forms.Rte\design.html" />
-    <Content Remove="App_Plugins\Mw.Umbraco.Forms.Rte\editor.html" />
-    <Content Remove="App_Plugins\Mw.Umbraco.Forms.Rte\lang\en.xml" />
-    <Content Remove="App_Plugins\Mw.Umbraco.Forms.Rte\lang\en_us.xml" />
-    <Content Remove="App_Plugins\Mw.Umbraco.Forms.Rte\rte.controller.js" />
+    <None Remove="App_Plugins\Mw.Umbraco.Forms.Rte\design.html" />
+    <None Remove="App_Plugins\Mw.Umbraco.Forms.Rte\editor.html" />
+    <None Remove="App_Plugins\Mw.Umbraco.Forms.Rte\lang\en.xml" />
+    <None Remove="App_Plugins\Mw.Umbraco.Forms.Rte\lang\en_us.xml" />
+    <None Remove="App_Plugins\Mw.Umbraco.Forms.Rte\rte.controller.js" />
+    <None Remove="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.RichText.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.RichText.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
