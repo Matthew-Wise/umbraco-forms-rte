@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ContentTargetFolders>.</ContentTargetFolders>
+    <Product>Mw.Umbraco.Forms.Rte</Product>
+    <PackageId>Mw.Umbraco.Forms.Rte</PackageId>
+    <Title>Mw.Umbraco.Forms.Rte</Title>
+    <Description>Adds a richtext editor for the form editor to create content within the form.</Description>
+    <PackageTags>umbraco plugin package</PackageTags>
+	  <AssemblyVersion>4.0.0</AssemblyVersion>
+	  <FileVersion>$(AssemblyVersion)</FileVersion>
+	  <Version>$(AssemblyVersion)</Version>
+	  <Company></Company>
+	  <Copyright>2022</Copyright>
+	  <PackageProjectUrl>https://github.com/Matthew-Wise/umbraco-forms-rte</PackageProjectUrl>
+	  <RepositoryUrl>https://github.com/Matthew-Wise/umbraco-forms-rte</RepositoryUrl>
+	  <RepositoryType>git</RepositoryType>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <PackageReleaseNotes>Umbraco 10</PackageReleaseNotes>
+	  <Authors>Matthew Wise, Aaron Sadler</Authors>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Umbraco.Cms.Core" Version="10.0.0" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="10.0.0" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="10.0.0" />
+    <PackageReference Include="Umbraco.Forms.Core" Version="10.0.0" />
+    <PackageReference Include="Umbraco.Forms.Web" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="build\**">
+      <Pack>true</Pack>
+      <PackagePath>buildTransitive</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.RichText.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.RichText.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,18 @@
+﻿@using Umbraco.Cms.Core.Templates
+@model Umbraco.Forms.Web.Models.FieldViewModel
+@inject HtmlLocalLinkParser HtmlLocalLinkParser;
+@inject HtmlUrlParser HtmlUrlParser;
+@inject HtmlImageSourceParser HtmlImageSourceParser;
+
+@{
+    if (Model.AdditionalSettings.TryGetValue("Html", out var value))
+    {
+        value = HtmlLocalLinkParser.EnsureInternalLinks(value);
+        value = HtmlUrlParser.EnsureUrls(value);
+        value = HtmlImageSourceParser.EnsureImageSources(value);
+
+        <div id="@Model.Id">
+            @Html.Raw(value)
+        </div>
+    }
+}

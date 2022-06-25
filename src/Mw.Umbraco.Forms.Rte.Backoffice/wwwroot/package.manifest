@@ -1,0 +1,8 @@
+﻿{
+  "name": "Mw.Umbraco.Forms.Rte",
+  "version": "3.0.0",
+  "allowPackageTelemetry": true,
+  "javascript": [
+    "~/App_Plugins/Mw.Umbraco.Forms.Rte/rte.controller.js"
+  ]
+}
