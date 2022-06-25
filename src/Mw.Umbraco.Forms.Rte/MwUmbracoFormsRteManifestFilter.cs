@@ -1,7 +1,7 @@
 ﻿using Umbraco.Cms.Core.Manifest;
 using System.Collections.Generic;
 
-namespace Mw.Umbraco.Forms.Rte.Backoffice
+namespace Mw.Umbraco.Forms.Rte
 {
     internal class MwUmbracoFormsRteManifestFilter : IManifestFilter
     {
@@ -13,7 +13,9 @@ namespace Mw.Umbraco.Forms.Rte.Backoffice
                 Scripts = new[]
                 {
                     "/App_Plugins/Mw.Umbraco.Forms.Rte/rte.controller.js"
-                }
+                },
+                Version = typeof(MwUmbracoFormsRteManifestFilter).Assembly.GetName().Version.ToString(3),
+                AllowPackageTelemetry = true
             });
         }
     }

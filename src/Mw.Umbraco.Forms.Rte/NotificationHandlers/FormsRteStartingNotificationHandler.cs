@@ -1,35 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using Umbraco.Cms.Core;
-using Umbraco.Cms.Core.Composing;
+using Umbraco.Cms.Core.Events;
 using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Notifications;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Serialization;
 using Umbraco.Cms.Core.Services;
 
-namespace Mw.Umbraco.Forms.Rte.Composing
+namespace Mw.Umbraco.Forms.Rte.NotificationHandlers
 {
-    public class FormsRteComponent : IComponent
+    public class FormsRteStartingNotificationHandler : INotificationHandler<UmbracoApplicationStartingNotification>
     {
         private readonly IDataTypeService _dataTypeService;
         private readonly IConfigurationEditorJsonSerializer _configurationEditorJsonSerializer;
         private readonly PropertyEditorCollection _propertyEditorCollection;
 
-        public FormsRteComponent(IDataTypeService dataTypeService, PropertyEditorCollection propertyEditorCollection, IConfigurationEditorJsonSerializer configurationEditorJsonSerializer)
+        public FormsRteStartingNotificationHandler(IDataTypeService dataTypeService, PropertyEditorCollection propertyEditorCollection, IConfigurationEditorJsonSerializer configurationEditorJsonSerializer)
         {
             _dataTypeService = dataTypeService;
             _propertyEditorCollection = propertyEditorCollection;
             _configurationEditorJsonSerializer = configurationEditorJsonSerializer;
         }
 
-        public void Initialize()
+        public void Handle(UmbracoApplicationStartingNotification notification)
         {
+            if (notification.RuntimeLevel != RuntimeLevel.Run)
+            {
+                return;
+            }
+
             CreateRteDataType();
-        }
-        
-        public void Terminate()
-        {
-            // Nothing to terminate
         }
 
         private void CreateRteDataType()

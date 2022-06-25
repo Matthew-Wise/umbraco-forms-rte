@@ -7,13 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mw.UmbForms.Rte", "Mw.UmbFo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{21718877-DE14-42F6-B3A5-7207C4ED9BAB}"
 	ProjectSection(SolutionItems) = preProject
-		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
 		package.xml = package.xml
+		..\.github\workflows\build.v8.yml = ..\.github\workflows\build.v8.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mw.Umbraco.Forms.Rte", "Mw.Umbraco.Forms.Rte\Mw.Umbraco.Forms.Rte.csproj", "{CE414E01-D1EA-4777-8491-C6C977CF6945}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mw.Umbraco.Forms.Rte.Backoffice", "Mw.Umbraco.Forms.Rte.Backoffice\Mw.Umbraco.Forms.Rte.Backoffice.csproj", "{06602863-21C6-4F69-8274-7C5EE49A73A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +27,6 @@ Global
 		{CE414E01-D1EA-4777-8491-C6C977CF6945}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE414E01-D1EA-4777-8491-C6C977CF6945}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE414E01-D1EA-4777-8491-C6C977CF6945}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06602863-21C6-4F69-8274-7C5EE49A73A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06602863-21C6-4F69-8274-7C5EE49A73A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06602863-21C6-4F69-8274-7C5EE49A73A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06602863-21C6-4F69-8274-7C5EE49A73A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

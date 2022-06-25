@@ -10,7 +10,8 @@ public class FormsRteComposer : IComposer
 {
     public void Compose(IUmbracoBuilder builder)
     {
-        builder.AddComponent<FormsRteComponent>();
+        builder.ManifestFilters().Append<MwUmbracoFormsRteManifestFilter>();
+        builder.AddNotificationHandler<UmbracoApplicationStartingNotification, FormsRteStartingNotificationHandler>();
         builder.AddNotificationHandler<DataTypeDeletingNotification, StopFormRteDeleteNotificationHandler>();
         builder.AddFormsRteField();
     }

@@ -1,54 +1,50 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ContentTargetFolders>.</ContentTargetFolders>
-    <Product>Mw.Umbraco.Forms.Rte</Product>
-    <PackageId>Mw.Umbraco.Forms.Rte</PackageId>
-    <Title>Mw.Umbraco.Forms.Rte</Title>
-    <Description>Adds a richtext editor for the form editor to create content within the form.</Description>
-    <PackageTags>umbraco plugin package</PackageTags>
-	  <AssemblyVersion>4.0.0</AssemblyVersion>
-	  <FileVersion>$(AssemblyVersion)</FileVersion>
-	  <Version>$(AssemblyVersion)</Version>
-	  <Company></Company>
-	  <Copyright>2022</Copyright>
-	  <PackageProjectUrl>https://github.com/Matthew-Wise/umbraco-forms-rte</PackageProjectUrl>
-	  <RepositoryUrl>https://github.com/Matthew-Wise/umbraco-forms-rte</RepositoryUrl>
-	  <RepositoryType>git</RepositoryType>
-	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <PackageReleaseNotes>Umbraco 10</PackageReleaseNotes>
-	  <Authors>Matthew Wise, Aaron Sadler</Authors>
-	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<StaticWebAssetBasePath>/App_Plugins/Mw.Umbraco.Forms.Rte</StaticWebAssetBasePath>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Core" Version="10.0.0" />
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="10.0.0" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="10.0.0" />
-    <PackageReference Include="Umbraco.Forms.Core" Version="10.0.0" />
-    <PackageReference Include="Umbraco.Forms.Web" Version="10.0.0" />
-  </ItemGroup>
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+		<ContentTargetFolders>.</ContentTargetFolders>
+		<Product>Mw.Umbraco.Forms.Rte</Product>
+		<PackageId>Mw.Umbraco.Forms.Rte</PackageId>
+		<Title>Mw.Umbraco.Forms.Rte</Title>
+		<Description>Adds a richtext editor for the form editor to create content within the form.</Description>
+		<PackageTags>umbraco plugin package forms</PackageTags>
+		<AssemblyVersion>3.0.0</AssemblyVersion>
+		<FileVersion>$(AssemblyVersion)</FileVersion>
+		<Version>$(AssemblyVersion)</Version>
+		<Company></Company>
+		<Copyright>2022</Copyright>
+		<PackageProjectUrl>https://github.com/Matthew-Wise/umbraco-forms-rte</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Matthew-Wise/umbraco-forms-rte</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReleaseNotes>Umbraco 10</PackageReleaseNotes>
+		<Authors>Matthew Wise, Aaron Sadler</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="build\**">
-      <Pack>true</Pack>
-      <PackagePath>buildTransitive</PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Umbraco.Forms.Web" Version="[10.0.0, 12.0.0)" />
+		<PackageReference Include="Umbraco.Cms.Core" Version="[10.0.0, 12.0.0)" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.6" />
+	</ItemGroup>	
 
-  <ItemGroup>
-    <None Remove="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.RichText.cshtml" />
-  </ItemGroup>
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Views\Partials\Forms\Themes\default\Fieldtypes\FieldType.RichText.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 </Project>
